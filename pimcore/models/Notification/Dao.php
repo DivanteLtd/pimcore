@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pimcore\Model\Notification;
 
 use Pimcore\Model\Dao\AbstractDao;
+use Pimcore\Model\Element;
 use Pimcore\Model\Notification;
 use Pimcore\Model\User;
 
@@ -34,7 +35,7 @@ class Dao extends AbstractDao
     }
 
     /**
-     *
+     * Save notification
      */
     public function save()
     {
@@ -52,7 +53,10 @@ class Dao extends AbstractDao
         }
     }
 
-    protected function assignVariablesToModel($data)
+    /**
+     * @param array $data
+     */
+    protected function assignVariablesToModel(array $data)
     {
         $model = $this->getModel();
 
@@ -72,6 +76,11 @@ class Dao extends AbstractDao
             }
         }
 
+        $linkedElement = null;
+        if (is_int($data['linkedElement'])) {
+            $linkedElement = Element\Service::getElementById($data['linkedElementType'], $data['linkedElement']);
+        }
+
         $model->setId($data['id']);
         $model->setCreationDate($data['creationDate']);
         $model->setModificationDate($data['modificationDate']);
@@ -79,6 +88,7 @@ class Dao extends AbstractDao
         $model->setRecipient($recipient);
         $model->setTitle($data['title']);
         $model->setMessage($data['message']);
+        $model->setLinkedElement($linkedElement);
         $model->setRead($data['read'] === 1 ? true : false);
     }
 

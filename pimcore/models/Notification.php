@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pimcore\Model;
 
 /**
@@ -12,55 +14,55 @@ class Notification extends AbstractModel
     /**
      * @var int
      */
-    public $id;
+    protected $id;
 
     /**
      * @var int
      */
-    public $creationDate;
+    protected $creationDate;
 
     /**
      * @var int
      */
-    public $modificationDate;
+    protected $modificationDate;
 
     /**
      * @var User
      */
-    public $sender;
+    protected $sender;
 
     /**
      * @var User
      */
-    public $recipient;
-
-    /**
-     * @var int
-     */
-    public $title;
-
-    /**
-     * @var int
-     */
-    public $message;
-
-    /**
-     * @var Element\AbstractElement
-     */
-    public $linkedElement;
+    protected $recipient;
 
     /**
      * @var string
      */
-    public $linkedElementType;
+    protected $title = '';
+
+    /**
+     * @var string
+     */
+    protected $message = '';
+
+    /**
+     * @var Element\AbstractElement
+     */
+    protected $linkedElement;
+
+    /**
+     * @var string
+     */
+    protected $linkedElementType;
 
     /**
      * @var bool
      */
-    public $read;
+    protected $read = false;
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getId()
     {
@@ -70,13 +72,13 @@ class Notification extends AbstractModel
     /**
      * @param int $id
      */
-    public function setId($id)
+    public function setId(int $id)
     {
         $this->id = $id;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getCreationDate()
     {
@@ -86,13 +88,13 @@ class Notification extends AbstractModel
     /**
      * @param int $creationDate
      */
-    public function setCreationDate($creationDate)
+    public function setCreationDate(int $creationDate)
     {
         $this->creationDate = $creationDate;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getModificationDate()
     {
@@ -102,13 +104,13 @@ class Notification extends AbstractModel
     /**
      * @param int $modificationDate
      */
-    public function setModificationDate($modificationDate)
+    public function setModificationDate(int $modificationDate)
     {
         $this->modificationDate = $modificationDate;
     }
 
     /**
-     * @return User
+     * @return User|null
      */
     public function getSender()
     {
@@ -116,15 +118,15 @@ class Notification extends AbstractModel
     }
 
     /**
-     * @param User $sender
+     * @param User|null $sender
      */
-    public function setSender($sender)
+    public function setSender(User $sender = null)
     {
         $this->sender = $sender;
     }
 
     /**
-     * @return User
+     * @return User|null
      */
     public function getRecipient()
     {
@@ -132,47 +134,47 @@ class Notification extends AbstractModel
     }
 
     /**
-     * @param User $recipient
+     * @param User|null $recipient
      */
-    public function setRecipient($recipient)
+    public function setRecipient(User $recipient = null)
     {
         $this->recipient = $recipient;
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getTitle()
+    public function getTitle() : string
     {
         return $this->title;
     }
 
     /**
-     * @param int $title
+     * @param string $title
      */
-    public function setTitle($title)
+    public function setTitle(string $title)
     {
         $this->title = $title;
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getMessage()
+    public function getMessage() : string
     {
         return $this->message;
     }
 
     /**
-     * @param int $message
+     * @param string $message
      */
-    public function setMessage($message)
+    public function setMessage(string $message)
     {
         $this->message = $message;
     }
 
     /**
-     * @return Element\AbstractElement
+     * @return Element\AbstractElement|null
      */
     public function getLinkedElement()
     {
@@ -180,15 +182,16 @@ class Notification extends AbstractModel
     }
 
     /**
-     * @param Element\AbstractElement $linkedElement
+     * @param Element\AbstractElement|null $linkedElement
      */
-    public function setLinkedElement($linkedElement)
+    public function setLinkedElement(Element\AbstractElement $linkedElement = null)
     {
-        $this->linkedElement = $linkedElement;
+        $this->linkedElement     = $linkedElement;
+        $this->linkedElementType = Element\Service::getElementType($linkedElement);
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getLinkedElementType()
     {
@@ -196,17 +199,9 @@ class Notification extends AbstractModel
     }
 
     /**
-     * @param string $linkedElementType
-     */
-    public function setLinkedElementType($linkedElementType)
-    {
-        $this->linkedElementType = $linkedElementType;
-    }
-
-    /**
      * @return bool
      */
-    public function isRead()
+    public function isRead() : bool
     {
         return $this->read;
     }
@@ -214,8 +209,16 @@ class Notification extends AbstractModel
     /**
      * @param bool $read
      */
-    public function setRead($read)
+    public function setRead(bool $read)
     {
         $this->read = $read;
+    }
+
+    /**
+     * Save notification
+     */
+    public function save()
+    {
+        $this->getDao()->save();
     }
 }
