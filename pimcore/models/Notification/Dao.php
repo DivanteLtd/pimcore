@@ -49,7 +49,7 @@ class Dao extends AbstractDao
         $this->db->insertOrUpdate(static::DB_TABLE_NAME, $this->getData($model));
 
         if ($model->getId() === null) {
-            $model->setId($this->db->lastInsertId());
+            $model->setId((int) $this->db->lastInsertId());
         }
     }
 

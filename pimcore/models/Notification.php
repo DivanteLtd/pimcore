@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Pimcore\Model;
 
+use Pimcore\Cache;
+
 /**
  * Class Notification
  * @method Notification\Dao getDao()
@@ -39,12 +41,12 @@ class Notification extends AbstractModel
     /**
      * @var string
      */
-    protected $title = '';
+    protected $title;
 
     /**
      * @var string
      */
-    protected $message = '';
+    protected $message;
 
     /**
      * @var Element\AbstractElement
@@ -62,9 +64,35 @@ class Notification extends AbstractModel
     protected $read = false;
 
     /**
+     * @param int $id
+     * @return null|Notification
+     */
+    public static function getById(int $id) : ?Notification
+    {
+        $cacheKey = sprintf('notification_%d', $id);
+
+        try {
+            $notification = Cache\Runtime::get($cacheKey);
+            if (!$notification instanceof Notification) {
+                throw new \Exception('Notification in registry is null');
+            }
+        } catch (\Exception $ex) {
+            try {
+                $notification = new self();
+                Cache\Runtime::set($cacheKey, $notification);
+                $notification->getDao()->getById($id);
+            } catch (\Exception $ex) {
+                return null;
+            }
+        }
+
+        return $notification;
+    }
+
+    /**
      * @return int|null
      */
-    public function getId()
+    public function getId() : ?int
     {
         return $this->id;
     }
@@ -80,7 +108,7 @@ class Notification extends AbstractModel
     /**
      * @return int|null
      */
-    public function getCreationDate()
+    public function getCreationDate() : ?int
     {
         return $this->creationDate;
     }
@@ -96,7 +124,7 @@ class Notification extends AbstractModel
     /**
      * @return int|null
      */
-    public function getModificationDate()
+    public function getModificationDate() : ?int
     {
         return $this->modificationDate;
     }
@@ -110,90 +138,90 @@ class Notification extends AbstractModel
     }
 
     /**
-     * @return User|null
+     * @return null|User
      */
-    public function getSender()
+    public function getSender() : ?User
     {
         return $this->sender;
     }
 
     /**
-     * @param User|null $sender
+     * @param null|User $sender
      */
-    public function setSender(User $sender = null)
+    public function setSender(?User $sender)
     {
         $this->sender = $sender;
     }
 
     /**
-     * @return User|null
+     * @return null|User
      */
-    public function getRecipient()
+    public function getRecipient() : ?User
     {
         return $this->recipient;
     }
 
     /**
-     * @param User|null $recipient
+     * @param null|User $recipient
      */
-    public function setRecipient(User $recipient = null)
+    public function setRecipient(?User $recipient)
     {
         $this->recipient = $recipient;
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getTitle() : string
+    public function getTitle() : ?string
     {
         return $this->title;
     }
 
     /**
-     * @param string $title
+     * @param null|string $title
      */
-    public function setTitle(string $title)
+    public function setTitle(?string $title)
     {
         $this->title = $title;
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getMessage() : string
+    public function getMessage() : ?string
     {
         return $this->message;
     }
 
     /**
-     * @param string $message
+     * @param null|string $message
      */
-    public function setMessage(string $message)
+    public function setMessage(?string $message)
     {
         $this->message = $message;
     }
 
     /**
-     * @return Element\AbstractElement|null
+     * @return null|Element\AbstractElement
      */
-    public function getLinkedElement()
+    public function getLinkedElement() : ?Element\AbstractElement
     {
         return $this->linkedElement;
     }
 
     /**
-     * @param Element\AbstractElement|null $linkedElement
+     * @param null|Element\AbstractElement $linkedElement
      */
-    public function setLinkedElement(Element\AbstractElement $linkedElement = null)
+    public function setLinkedElement(?Element\AbstractElement $linkedElement)
     {
         $this->linkedElement     = $linkedElement;
         $this->linkedElementType = Element\Service::getElementType($linkedElement);
     }
 
     /**
-     * @return string|null
+     * @return null|string
      */
-    public function getLinkedElementType()
+    public function getLinkedElementType() : ?string
     {
         return $this->linkedElementType;
     }
