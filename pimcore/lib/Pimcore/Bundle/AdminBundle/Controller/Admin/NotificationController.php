@@ -54,29 +54,43 @@ class NotificationController
         $filters = [];
 
         foreach ($params as $key => $param) {
-            if(isset($param['gt'])) {
+            if ($param['operator'] === 'gt') {
                 $filters[$key]['greater'] = $param['value'];
                 $filters[$key]['field']   = $param['property'];
                 $filters[$key]['type']    = $param['type'];
             }
 
-            if(isset($param['lt'])) {
+            if ($param['operator'] === 'lt') {
                 $filters[$key]['lower'] = $param['value'];
                 $filters[$key]['field'] = $param['property'];
                 $filters[$key]['type']  = $param['type'];
             }
 
-            if(isset($param['like'])) {
+            if ($param['operator'] === 'like') {
                 $filters[$key]['like']  = $param['value'];
                 $filters[$key]['field'] = $param['property'];
                 $filters[$key]['type']  = $param['type'];
             }
 
-            if(isset($param['in'])) {
+            if ($param['operator'] === 'in') {
                 $filters[$key]['select'] = $param['value'];
                 $filters[$key]['field']  = $param['property'];
                 $filters[$key]['type']   = $param['type'];
             }
+
+            if ($param['operator'] === 'eq') {
+                $filters[$key]['equals'] = $param['value'];
+                $filters[$key]['field']  = $param['property'];
+                $filters[$key]['type']   = $param['type'];
+            }
+
+            if ($param['operator'] === '=') {
+                $filters[$key]['bool']   = $param['value'];
+                $filters[$key]['field']  = $param['property'];
+                $filters[$key]['type']   = $param['type'];
+            }
         }
+
+        return $filters;
     }
 }
