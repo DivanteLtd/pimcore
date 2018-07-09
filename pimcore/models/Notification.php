@@ -8,8 +8,8 @@ use Pimcore\Cache;
 
 /**
  * Class Notification
- * @method Notification\Dao getDao()
  * @package Pimcore\Model
+ * @method Notification\Dao getDao()
  */
 class Notification extends AbstractModel
 {
