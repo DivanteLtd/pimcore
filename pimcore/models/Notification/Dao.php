@@ -21,7 +21,7 @@ class Dao extends AbstractDao
      * @param int $id
      * @throws \Exception
      */
-    public function getById(int $id)
+    public function getById(int $id): void
     {
         $sql  = sprintf("SELECT * FROM `%s` WHERE 'id' = ?", static::DB_TABLE_NAME);
         $data = $this->db->fetchRow($sql, $id);
@@ -54,9 +54,19 @@ class Dao extends AbstractDao
     }
 
     /**
+     * Delete notification
+     */
+    public function delete(): void
+    {
+        $this->db->delete(static::DB_TABLE_NAME, [
+            'id' => $this->getModel()->getId(),
+        ]);
+    }
+
+    /**
      * @param array $data
      */
-    protected function assignVariablesToModel(array $data)
+    protected function assignVariablesToModel(array $data): void
     {
         $model = $this->getModel();
 
@@ -96,7 +106,7 @@ class Dao extends AbstractDao
      * @param Notification $model
      * @return array
      */
-    protected function getData(Notification $model) : array
+    protected function getData(Notification $model): array
     {
         return [
             'id'                => $model->getId(),
@@ -115,7 +125,7 @@ class Dao extends AbstractDao
     /**
      * @return Notification
      */
-    protected function getModel() : Notification
+    protected function getModel(): Notification
     {
         return $this->model;
     }
