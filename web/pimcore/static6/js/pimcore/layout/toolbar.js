@@ -347,6 +347,17 @@ pimcore.layout.toolbar = Class.create({
                 });
             }
 
+            /** @todo finish next CD **/
+            if(user.isAllowed("admin_notifications")&& perspectiveCfg.inToolbar("extras.admin_notifications")) {
+                extrasItems.push({
+                    text: t("admin_notifications"),
+                    iconCls: "admin_notifications",
+                    handler: function() {
+                        /** @todo **/
+                    }
+                });
+            }
+
             if (extrasItems.length > 0) {
                 extrasItems.push("-");
             }
