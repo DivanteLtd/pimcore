@@ -630,6 +630,7 @@ class Installer
             ['key' => 'plugins'],
             ['key' => 'predefined_properties'],
             ['key' => 'asset_metadata'],
+            ['key' => 'qr_codes'],
             ['key' => 'recyclebin'],
             ['key' => 'redirects'],
             ['key' => 'reports'],
@@ -649,7 +650,8 @@ class Installer
             ['key' => 'users'],
             ['key' => 'website_settings'],
             ['key' => 'admin_translations'],
-            ['key' => 'web2print_settings']
+            ['key' => 'web2print_settings'],
+            ['key' => 'workflow_details']
         ];
 
         foreach ($userPermissions as $up) {

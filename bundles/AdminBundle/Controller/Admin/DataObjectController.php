@@ -23,8 +23,6 @@ use Pimcore\Model;
 use Pimcore\Model\DataObject;
 use Pimcore\Model\Element;
 use Pimcore\Tool;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -34,6 +32,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Route("/object")
@@ -46,8 +45,7 @@ class DataObjectController extends ElementControllerBase implements EventedContr
     protected $_objectService;
 
     /**
-     * @Route("/tree-get-childs-by-id")
-     * @Method({"GET"})
+     * @Route("/tree-get-childs-by-id", methods={"GET"})
      *
      * @param Request $request
      *
@@ -281,8 +279,7 @@ class DataObjectController extends ElementControllerBase implements EventedContr
     }
 
     /**
-     * @Route("/get-id-path-paging-info")
-     * @Method({"GET"})
+     * @Route("/get-id-path-paging-info", methods={"GET"})
      *
      * @param Request $request
      *
@@ -333,8 +330,7 @@ class DataObjectController extends ElementControllerBase implements EventedContr
     }
 
     /**
-     * @Route("/get")
-     * @Method({"GET"})
+     * @Route("/get", methods={"GET"})
      *
      * @param Request $request
      *
@@ -725,14 +721,13 @@ class DataObjectController extends ElementControllerBase implements EventedContr
     }
 
     /**
-     * @Route("/get-folder")
-     * @Method({"GET"})
+     * @Route("/get-folder", methods={"GET"})
      *
      * @param Request $request
      *
      * @return JsonResponse
      */
-    public function getFolderAction(Request $request)
+    public function getFolderAction(Request $request, EventDispatcherInterface $eventDispatcher)
     {
         // check for lock
         if (Element\Editlock::isLocked($request->get('id'), 'object')) {
@@ -778,6 +773,15 @@ class DataObjectController extends ElementControllerBase implements EventedContr
                 }
             }
 
+            //Hook for modifying return value - e.g. for changing permissions based on object data
+            //data need to wrapped into a container in order to pass parameter to event listeners by reference so that they can change the values
+            $event = new GenericEvent($this, [
+                'data' => $objectData,
+                'object' => $object,
+            ]);
+            $eventDispatcher->dispatch(AdminEvents::OBJECT_GET_PRE_SEND_DATA, $event);
+            $objectData = $event->getArgument('data');
+
             return $this->adminJson($objectData);
         } else {
             Logger::debug('prevented getting folder id [ ' . $object->getId() . ' ] because of missing permissions');
@@ -805,8 +809,7 @@ class DataObjectController extends ElementControllerBase implements EventedContr
     }
 
     /**
-     * @Route("/add")
-     * @Method({"POST"})
+     * @Route("/add", methods={"POST"})
      *
      * @param Request $request
      *
@@ -881,8 +884,7 @@ class DataObjectController extends ElementControllerBase implements EventedContr
     }
 
     /**
-     * @Route("/add-folder")
-     * @Method({"POST"})
+     * @Route("/add-folder", methods={"POST"})
      *
      * @param Request $request
      *
@@ -923,8 +925,7 @@ class DataObjectController extends ElementControllerBase implements EventedContr
     }
 
     /**
-     * @Route("/delete")
-     * @Method({"DELETE"})
+     * @Route("/delete", methods={"DELETE"})
      *
      * @param Request $request
      *
@@ -968,8 +969,7 @@ class DataObjectController extends ElementControllerBase implements EventedContr
     }
 
     /**
-     * @Route("/change-children-sort-by")
-     * @Method({"PUT"})
+     * @Route("/change-children-sort-by", methods={"PUT"})
      *
      * @param Request $request
      *
@@ -990,8 +990,7 @@ class DataObjectController extends ElementControllerBase implements EventedContr
     }
 
     /**
-     * @Route("/delete-info")
-     * @Method({"GET"})
+     * @Route("/delete-info", methods={"GET"})
      *
      * @param Request $request
      *
@@ -1090,8 +1089,7 @@ class DataObjectController extends ElementControllerBase implements EventedContr
     }
 
     /**
-     * @Route("/update")
-     * @Method({"PUT"})
+     * @Route("/update", methods={"PUT"})
      *
      * @param Request $request
      *
@@ -1232,8 +1230,7 @@ class DataObjectController extends ElementControllerBase implements EventedContr
     }
 
     /**
-     * @Route("/save")
-     * @Method({"POST", "PUT"})
+     * @Route("/save", methods={"POST", "PUT"})
      *
      * @param Request $request
      *
@@ -1502,8 +1499,7 @@ class DataObjectController extends ElementControllerBase implements EventedContr
     }
 
     /**
-     * @Route("/save-folder")
-     * @Method({"PUT"})
+     * @Route("/save-folder", methods={"PUT"})
      *
      * @param Request $request
      *
@@ -1579,8 +1575,7 @@ class DataObjectController extends ElementControllerBase implements EventedContr
     }
 
     /**
-     * @Route("/publish-version")
-     * @Method({"POST"})
+     * @Route("/publish-version", methods={"POST"})
      *
      * @param Request $request
      *
@@ -1615,8 +1610,7 @@ class DataObjectController extends ElementControllerBase implements EventedContr
     }
 
     /**
-     * @Route("/preview-version")
-     * @Method({"GET"})
+     * @Route("/preview-version", methods={"GET"})
      *
      * @param Request $request
      * @TemplatePhp()
@@ -1647,8 +1641,7 @@ class DataObjectController extends ElementControllerBase implements EventedContr
     }
 
     /**
-     * @Route("/diff-versions/from/{from}/to/{to}")
-     * @Method({"GET"})
+     * @Route("/diff-versions/from/{from}/to/{to}", methods={"GET"})
      * @TemplatePhp()
      *
      * @param Request $request
@@ -1689,8 +1682,7 @@ class DataObjectController extends ElementControllerBase implements EventedContr
     }
 
     /**
-     * @Route("/grid-proxy")
-     * @Method({"GET", "POST", "PUT"})
+     * @Route("/grid-proxy", methods={"GET", "POST", "PUT"})
      *
      * @param Request $request
      *
@@ -2090,8 +2082,7 @@ class DataObjectController extends ElementControllerBase implements EventedContr
     }
 
     /**
-     * @Route("/copy-info")
-     * @Method({"GET"})
+     * @Route("/copy-info", methods={"GET"})
      *
      * @param Request $request
      *
@@ -2181,8 +2172,7 @@ class DataObjectController extends ElementControllerBase implements EventedContr
     }
 
     /**
-     * @Route("/copy-rewrite-ids")
-     * @Method({"PUT"})
+     * @Route("/copy-rewrite-ids", methods={"PUT"})
      *
      * @param Request $request
      *
@@ -2223,8 +2213,7 @@ class DataObjectController extends ElementControllerBase implements EventedContr
     }
 
     /**
-     * @Route("/copy")
-     * @Method({"POST"})
+     * @Route("/copy", methods={"POST"})
      *
      * @param Request $request
      *
@@ -2298,8 +2287,7 @@ class DataObjectController extends ElementControllerBase implements EventedContr
     }
 
     /**
-     * @Route("/preview")
-     * @Method({"GET"})
+     * @Route("/preview", methods={"GET"})
      *
      * @param Request $request
      *
