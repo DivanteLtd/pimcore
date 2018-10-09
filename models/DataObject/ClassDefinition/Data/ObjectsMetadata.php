@@ -875,7 +875,11 @@ class ObjectsMetadata extends Model\DataObject\ClassDefinition\Data\Objects
             return;
         }
 
-        $class = DataObject\ClassDefinition::getById($classId);
+        if (is_string($classId)) {
+            $class = DataObject\ClassDefinition::getByName($classId);
+        } elseif (is_int($classId)) {
+            $class = DataObject\ClassDefinition::getById($classId);
+        }
 
         if (!$this->visibleFields) {
             return;
