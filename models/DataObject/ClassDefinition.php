@@ -381,7 +381,11 @@ class ClassDefinition extends Model\AbstractModel
         }
         $cd .= "*/\n\n";
 
-        $cd .= 'class '.ucfirst($this->getName()).' extends '.$extendClass.' {';
+        $cd .= 'class '.ucfirst($this->getName()).' extends '.$extendClass.' implements \\Pimcore\\Model\\DataObject\\DirtyIndicatorInterface {';
+        $cd .= "\n\n";
+
+        $cd .= "\n\n";
+        $cd .= 'use \\Pimcore\\Model\\DataObject\\Traits\\DirtyIndicatorTrait;';
         $cd .= "\n\n";
 
         if ($this->getUseTraits()) {
@@ -975,7 +979,7 @@ class ClassDefinition extends Model\AbstractModel
      */
     public function setUseTraits($useTraits)
     {
-        $this->useTraits = $useTraits;
+        $this->useTraits = $useTraits ? $useTraits : null;
 
         return $this;
     }
@@ -995,7 +999,7 @@ class ClassDefinition extends Model\AbstractModel
      */
     public function setListingUseTraits($listingUseTraits)
     {
-        $this->listingUseTraits = $listingUseTraits;
+        $this->listingUseTraits = $listingUseTraits ? true : null;
 
         return $this;
     }
@@ -1035,7 +1039,7 @@ class ClassDefinition extends Model\AbstractModel
      */
     public function setListingParentClass($listingParentClass)
     {
-        $this->listingParentClass = $listingParentClass;
+        $this->listingParentClass = $listingParentClass ? $listingParentClass : null;
 
         return $this;
     }
@@ -1047,7 +1051,7 @@ class ClassDefinition extends Model\AbstractModel
      */
     public function setAllowInherit($allowInherit)
     {
-        $this->allowInherit = (bool)$allowInherit;
+        $this->allowInherit = (bool)$allowInherit ? true : null;
 
         return $this;
     }
@@ -1059,7 +1063,7 @@ class ClassDefinition extends Model\AbstractModel
      */
     public function setAllowVariants($allowVariants)
     {
-        $this->allowVariants = (bool)$allowVariants;
+        $this->allowVariants = (bool)$allowVariants ? true : null;
 
         return $this;
     }
@@ -1167,7 +1171,7 @@ class ClassDefinition extends Model\AbstractModel
      */
     public function setShowVariants($showVariants)
     {
-        $this->showVariants = (bool)$showVariants;
+        $this->showVariants = (bool)$showVariants ? true : null;
     }
 
     /**
@@ -1191,7 +1195,7 @@ class ClassDefinition extends Model\AbstractModel
      */
     public function setShowAppLoggerTab($showAppLoggerTab)
     {
-        $this->showAppLoggerTab = (bool) $showAppLoggerTab;
+        $this->showAppLoggerTab = (bool) $showAppLoggerTab ? true : null;
     }
 
     /**

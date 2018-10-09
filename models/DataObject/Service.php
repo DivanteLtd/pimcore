@@ -711,10 +711,11 @@ class Service extends Model\Element\Service
      *
      * @param string $filterJson
      * @param ClassDefinition $class
+     * @param $requestedLanguage
      *
      * @return string
      */
-    public static function getFeatureFilters($filterJson, $class)
+    public static function getFeatureFilters($filterJson, $class, $requestedLanguage)
     {
         $joins = [];
         $conditions = [];
@@ -767,6 +768,14 @@ class Service extends Model\Element\Service
                 $fieldName = $keyParts[2];
                 $groupKeyId = explode('-', $keyParts[3]);
 
+                /** @var $csFieldDefinition Model\DataObject\ClassDefinition\Data\Classificationstore */
+                $csFieldDefinition = $class->getFieldDefinition('cs');
+
+                $language = $requestedLanguage;
+                if (!$csFieldDefinition->isLocalized()) {
+                    $language = 'default';
+                }
+
                 $groupId = $groupKeyId[0];
                 $keyid = $groupKeyId[1];
 
@@ -777,7 +786,7 @@ class Service extends Model\Element\Service
 
                 if ($field instanceof ClassDefinition\Data) {
                     $mappedKey = 'cskey_' . $fieldName . '_' . $groupId . '_' . $keyid;
-                    $joins[] = ['fieldname' => $fieldName, 'groupId' => $groupId, 'keyId' => $keyid];
+                    $joins[] = ['fieldname' => $fieldName, 'groupId' => $groupId, 'keyId' => $keyid, 'language' => $language];
                     $condition = $field->getFilterConditionExt(
                         $filter['value'],
                         $operator,
@@ -1667,13 +1676,12 @@ class Service extends Model\Element\Service
      * @param $featureJoins
      * @param $class
      * @param $featureFilters
-     * @param $requestedLanguage
      */
-    public static function addGridFeatureJoins($list, $featureJoins, $class, $featureFilters, $requestedLanguage)
+    public static function addGridFeatureJoins($list, $featureJoins, $class, $featureFilters)
     {
         if ($featureJoins) {
             $me = $list;
-            $list->onCreateQuery(function (QueryBuilder $select) use ($list, $featureJoins, $class, $featureFilters, $requestedLanguage, $me) {
+            $list->onCreateQuery(function (QueryBuilder $select) use ($list, $featureJoins, $class, $featureFilters, $me) {
                 $db = \Pimcore\Db::get();
 
                 $alreadyJoined = [];
@@ -1681,7 +1689,7 @@ class Service extends Model\Element\Service
                 foreach ($featureJoins as $featureJoin) {
                     $fieldname = $featureJoin['fieldname'];
                     $mappedKey = 'cskey_' . $fieldname . '_' . $featureJoin['groupId'] . '_' . $featureJoin['keyId'];
-                    if ($alreadyJoined[$mappedKey]) {
+                    if (isset($alreadyJoined[$mappedKey]) && $alreadyJoined[$mappedKey]) {
                         continue;
                     }
                     $alreadyJoined[$mappedKey] = 1;
@@ -1694,7 +1702,7 @@ class Service extends Model\Element\Service
                         . ' and ' . $mappedKey . '.fieldname = ' . $db->quote($fieldname)
                         . ' and ' . $mappedKey . '.groupId=' . $featureJoin['groupId']
                         . ' and ' . $mappedKey . '.keyId=' . $featureJoin['keyId']
-                        . ' and ' . $mappedKey . '.language = ' . $db->quote($requestedLanguage)
+                        . ' and ' . $mappedKey . '.language = ' . $db->quote($featureJoin['language'])
                         . ')',
                         [
                             $mappedKey => 'value'
@@ -1749,5 +1757,50 @@ class Service extends Model\Element\Service
             $key = 'object_' . $objectId;
             $session->remove($key);
         }, 'pimcore_objects');
+    }
+
+    /**
+     * @param $container
+     * @param $fd
+     */
+    public static function doResetDirtyMap($container, $fd)
+    {
+        $fieldDefinitions = $fd->getFieldDefinitions();
+
+        if (is_array($fieldDefinitions)) {
+            /** @var $fd Model\DataObject\ClassDefinition\Data */
+            foreach ($fieldDefinitions as $fd) {
+                $value = $container->getObjectVar($fd->getName());
+
+                if ($value instanceof Localizedfield) {
+                    $value->resetLanguageDirtyMap();
+                }
+
+                if (!method_exists($value, 'resetDirtyMap')) {
+                    continue;
+                }
+
+                $value->resetDirtyMap();
+
+                if (!method_exists($value, 'getFieldDefinitions')) {
+                    continue;
+                }
+
+                self::doResetDirtyMap($value, $fieldDefinitions[$fd->getName()]);
+            }
+        }
+    }
+
+    /**
+     * @param AbstractObject $object
+     */
+    public static function recursiveResetDirtyMap(AbstractObject $object)
+    {
+        if (method_exists($object, 'resetDirtyMap')) {
+            $object->resetDirtyMap();
+        }
+        if ($object instanceof Concrete) {
+            self::doResetDirtyMap($object, $object->getClass());
+        }
     }
 }

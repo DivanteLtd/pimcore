@@ -9,23 +9,24 @@
  * LICENSE.md which is distributed with this source code.
  *
  * @category   Pimcore
+ * @package    Element
  *
  * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-namespace Pimcore\Model\DataObject\ClassDefinition\Data;
+namespace Pimcore\Model\DataObject\Traits;
 
-use Pimcore\Model;
-
-class Firstname extends Model\DataObject\ClassDefinition\Data\Input
+trait SimpleComparisonTrait
 {
-    use Model\DataObject\Traits\SimpleComparisonTrait;
-
     /**
-     * Static type of this element
+     * @param $oldValue
+     * @param $newValue
      *
-     * @var string
+     * @return bool
      */
-    public $fieldtype = 'firstname';
+    public function isEqual($oldValue, $newValue)
+    {
+        return $oldValue == $newValue;
+    }
 }

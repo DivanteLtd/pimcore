@@ -90,7 +90,6 @@ class Dao extends Model\Element\Dao
                 'parentId' => $this->model->getParentId()
             ]);
 
-            $date = time();
             $this->model->setId($this->db->lastInsertId());
         } catch (\Exception $e) {
             throw $e;
