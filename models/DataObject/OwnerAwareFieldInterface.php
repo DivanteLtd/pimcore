@@ -1,7 +1,4 @@
 <?php
-
-declare(strict_types=1);
-
 /**
  * Pimcore
  *
@@ -11,16 +8,23 @@ declare(strict_types=1);
  * Full copyright and license information is available in
  * LICENSE.md which is distributed with this source code.
  *
+ * @category   Pimcore
+ * @package    Element
+ *
  * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-namespace Pimcore\Storage\Redis;
+namespace Pimcore\Model\DataObject;
 
-class Connection extends \Credis_Client
+interface OwnerAwareFieldInterface
 {
-    public function isStandalone(): bool
-    {
-        return $this->standalone;
-    }
+    /**
+     * @param $owner
+     * @param string $fieldname
+     * @param null $language
+     *
+     * @return mixed
+     */
+    public function setOwner($owner, string $fieldname, $language = null);
 }

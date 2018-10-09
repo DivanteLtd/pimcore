@@ -9,23 +9,37 @@
  * LICENSE.md which is distributed with this source code.
  *
  * @category   Pimcore
+ * @package    Element
  *
  * @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
  * @license    http://www.pimcore.org/license     GPLv3 and PEL
  */
 
-namespace Pimcore\Model\DataObject\ClassDefinition\Data;
+namespace Pimcore\Model\DataObject;
 
-use Pimcore\Model;
-
-class Firstname extends Model\DataObject\ClassDefinition\Data\Input
+interface DirtyIndicatorInterface
 {
-    use Model\DataObject\Traits\SimpleComparisonTrait;
+    /**
+     * @return bool
+     */
+    public function hasDirtyFields();
 
     /**
-     * Static type of this element
+     * @param $key
      *
-     * @var string
+     * @return bool
      */
-    public $fieldtype = 'firstname';
+    public function isFieldDirty($key);
+
+    /**
+     * marks the given field as dirty
+     *
+     * @param $field
+     * @param bool $dirty
+     *
+     * @return mixed
+     */
+    public function markFieldDirty($field, $dirty = true);
+
+    public function resetDirtyMap();
 }

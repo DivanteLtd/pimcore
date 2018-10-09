@@ -4,14 +4,15 @@ namespace Pimcore\Bundle\CoreBundle\Migrations;
 
 use Doctrine\DBAL\Schema\Schema;
 use Pimcore\Migrations\Migration\AbstractPimcoreMigration;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Objectbrick\Definition;
 
 /**
- * Class Version20180907115436
+ * Class Version20180912140913
  *
  * @package Pimcore\Bundle\CoreBundle\Migrations
  */
-class Version20180907115436 extends AbstractPimcoreMigration
+class Version20180912140913 extends AbstractPimcoreMigration
 {
     public function doesSqlMigrations(): bool
     {
@@ -23,7 +24,12 @@ class Version20180907115436 extends AbstractPimcoreMigration
      */
     public function up(Schema $schema)
     {
-        $this->writeMessage('Please note that object properties are not public anymore !!');
+        $list = new ClassDefinition\Listing();
+        $list = $list->load();
+
+        foreach ($list as $class) {
+            $class->save(false);
+        }
 
         $list = new Definition\Listing();
         $list = $list->load();
