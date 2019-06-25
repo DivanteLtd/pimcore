@@ -1796,7 +1796,7 @@ class DataObjectController extends ElementControllerBase implements EventedContr
 
             $start = 0;
             $limit = 20;
-            $orderKey = 'oo_id';
+            $orderKey = 'o_id';
             $order = 'ASC';
 
             $fields = [];
@@ -1891,6 +1891,8 @@ class DataObjectController extends ElementControllerBase implements EventedContr
                                                  )';
             }
 
+            $countFilter = $conditionFilters[0];
+
             $featureJoins = [];
             $featureFilters = false;
 
@@ -1949,6 +1951,7 @@ class DataObjectController extends ElementControllerBase implements EventedContr
                 'context' => $allParams
             ]);
             $eventDispatcher->dispatch(AdminEvents::OBJECT_LIST_BEFORE_LIST_LOAD, $beforeListLoadEvent);
+
             $list = $beforeListLoadEvent->getArgument('list');
 
             $list->load();
@@ -1962,7 +1965,17 @@ class DataObjectController extends ElementControllerBase implements EventedContr
                 }
             }
 
-            $result = ['data' => $objects, 'success' => true, 'total' => $list->getTotalCount()];
+            if ($allParams['filter']) {
+                $total = $list->getTotalCount();
+            } else {
+                $sql = "SELECT count(*) from objects where ".$countFilter." AND o_classId = ".$list->getClassId();
+                $stmt = Db::get()->prepare($sql);
+                $stmt->execute();
+                $total = $stmt->fetchColumn(0);
+
+            }
+
+            $result = ['data' => $objects, 'success' => true, 'total' => $total];
 
             $afterListLoadEvent = new GenericEvent($this, [
                 'list' => $result,
