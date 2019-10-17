@@ -120,7 +120,7 @@ class CoreHandler implements LoggerAwareInterface, CoreHandlerInterface
      *
      * @var int
      */
-    protected $maxWriteToCacheItems = 50;
+    protected $maxWriteToCacheItems = 50000;
 
     /**
      * @var \Closure
@@ -338,7 +338,7 @@ class CoreHandler implements LoggerAwareInterface, CoreHandlerInterface
 
         if ($force || $this->forceImmediateWrite) {
             if ($this->writeLock->hasLock()) {
-                $this->logger->warning(
+                $this->logger->notice(
                     'Not saving {key} to cache as there\'s an active write lock',
                     ['key' => $key]
                 );

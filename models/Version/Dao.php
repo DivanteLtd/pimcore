@@ -190,18 +190,18 @@ class Dao extends Model\Dao\AbstractDao
             $count = 0;
             $stop = false;
             foreach ($elementTypes as $elementType) {
-                if ($elementType['days'] > 0) {
+                if (isset($elementType['days']) && $elementType['days'] > 0) {
                     // by days
                     $deadline = time() - ($elementType['days'] * 86400);
                     $tmpVersionIds = $this->db->fetchCol('SELECT id FROM versions as a WHERE (ctype = ? AND date < ?) AND NOT public AND id NOT IN (' . $ignoreIdsList . ')', [$elementType['elementType'], $deadline]);
                     $versionIds = array_merge($versionIds, $tmpVersionIds);
                 } else {
                     // by steps
-                    $elementIds = $this->db->fetchCol('SELECT cid,count(*) as amount FROM versions WHERE ctype = ? AND NOT public AND id NOT IN (' . $ignoreIdsList . ') GROUP BY cid HAVING amount > ?', [$elementType['elementType'], $elementType['steps']]);
-                    foreach ($elementIds as $elementId) {
+                    $versionData = $this->db->executeQuery('SELECT cid, GROUP_CONCAT(id ORDER BY id DESC) AS versions FROM versions WHERE ctype = ? AND NOT public AND id NOT IN (' . $ignoreIdsList . ') GROUP BY cid HAVING COUNT(*) > ? LIMIT 1000', [$elementType['elementType'], $elementType['steps']]);
+                    while( $versionInfo = $versionData->fetch()) {
                         $count++;
-                        Logger::info($elementId . '(object ' . $count . ') Vcount ' . count($versionIds));
-                        $elementVersions = $this->db->fetchCol('SELECT id FROM versions WHERE cid = ? and ctype = ? ORDER BY date DESC LIMIT ' . $elementType['steps'] . ',1000000', [$elementId, $elementType['elementType']]);
+                        Logger::info($versionInfo['cid'] . '(object ' . $count . ') Vcount ' . count($versionIds));
+                        $elementVersions = \array_slice(explode(',', $versionInfo['versions']), $elementType['steps']);
 
                         $versionIds = array_merge($versionIds, $elementVersions);
 
@@ -209,8 +209,6 @@ class Dao extends Model\Dao\AbstractDao
                         if (memory_get_usage() > 100000000 && ($count % 100 == 0)) {
                             \Pimcore::collectGarbage();
                             sleep(1);
-
-                            $versionIds = array_unique($versionIds);
                         }
 
                         if (count($versionIds) > 1000) {
@@ -218,8 +216,6 @@ class Dao extends Model\Dao\AbstractDao
                             break;
                         }
                     }
-
-                    $versionIds = array_unique($versionIds);
 
                     if ($stop) {
                         break;
