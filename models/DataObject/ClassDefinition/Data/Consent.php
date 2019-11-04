@@ -296,10 +296,13 @@ class Consent extends Data implements ResourcePersistenceAwareInterface, QueryRe
      */
     public function checkValidity($data, $omitMandatoryCheck = false)
     {
-        if (!$omitMandatoryCheck and $this->getMandatory() and $data === null) {
-            throw new Model\Element\ValidationException('Empty mandatory field [ ' . $this->getName() . ' ]');
+        if ($omitMandatoryCheck || !$this->getMandatory()) {
+            return;
         }
 
+        if ($data === null || $data instanceof DataObject\Data\Consent && !$data->getConsent()) {
+            throw new Model\Element\ValidationException('Empty mandatory field [ ' . $this->getName() . ' ]');
+        }
         /* @todo seems to cause problems with old installations
         if(!is_bool($data) and $data !== 1 and $data !== 0){
         throw new \Exception(get_class($this).": invalid data");
