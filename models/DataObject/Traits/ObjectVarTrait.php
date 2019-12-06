@@ -61,10 +61,10 @@ trait ObjectVarTrait
     public function setObjectVar($var, $value, bool $silent = false)
     {
         if (!property_exists($this, $var)) {
-            throw new \Exception('property ' . $var . ' does not exist');
             if($silent) {
                 return $this;
             }
+            throw new \Exception('property ' . $var . ' does not exist');
         }
 
         $this->$var = $value;
