@@ -407,6 +407,7 @@ class Dao extends Model\Element\Dao
     }
 
     /**
+     * Returns classes of childs of Data Object
      * @return array
      */
     public function getClasses()
@@ -416,11 +417,15 @@ class Dao extends Model\Element\Dao
             if (!$this->model->getId() || $this->model->getId() == 1) {
                 $path = '';
             }
-            $classIds = $this->db->fetchCol("SELECT o_classId FROM objects WHERE o_path LIKE ? AND o_type = 'object' GROUP BY o_classId", $path . '/%');
+
+            $classIds = $this->db->fetchCol("SELECT id FROM classes;");
 
             $classes = [];
             foreach ($classIds as $classId) {
-                $classes[] = DataObject\ClassDefinition::getById($classId);
+                $isInPath = $this->db->fetchCol("SELECT o_classId FROM objects WHERE o_path LIKE ? AND o_classId = ? LIMIT 1;", [$path . '/%', $classId]);
+                if (count($isInPath)) {
+                    $classes[] = DataObject\ClassDefinition::getById($classId);
+                }
             }
 
             return $classes;
