@@ -171,7 +171,11 @@ class Checkbox extends Data implements ResourcePersistenceAwareInterface, QueryR
      */
     public function getVersionPreview($data, $object = null, $params = [])
     {
-        return (string)$data;
+        if (is_null($data)) {
+            return '';
+        } else {
+            return boolval($data) ? '1' : '0';
+        }
     }
 
     /**
