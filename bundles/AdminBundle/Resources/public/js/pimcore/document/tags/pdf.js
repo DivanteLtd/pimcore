@@ -233,6 +233,8 @@ pimcore.document.tags.pdf = Class.create(pimcore.document.tag, {
     },
 
     updateImage: function () {
+
+        var path = "";
         var existingImage = this.getBody().dom.getElementsByTagName("img")[0];
         if (existingImage) {
             Ext.get(existingImage).remove();
@@ -242,11 +244,8 @@ pimcore.document.tags.pdf = Class.create(pimcore.document.tag, {
             return;
         }
 
-        var params = this.data;
-        params['width'] = this.element.getEl().getWidth();
-        params['aspectratio'] = true;
-
-        var path = Routing.generate('pimcore_admin_asset_getdocumentthumbnail', params)
+        path = "/admin/asset/get-document-thumbnail?id=" + this.data.id + "&width=" + this.element.getEl().getWidth()
+                        + "&aspectratio=true&" + Ext.urlEncode(this.data);
 
         var image = document.createElement("img");
         image.src = path;

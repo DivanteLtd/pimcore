@@ -119,7 +119,7 @@ abstract class TargetingDocument extends PageSnippet implements TargetingDocumen
      *
      * @param string $name
      *
-     * @return Tag|null
+     * @return Tag
      */
     public function getElement($name)
     {

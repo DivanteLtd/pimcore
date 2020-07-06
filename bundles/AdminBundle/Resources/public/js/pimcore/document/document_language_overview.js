@@ -17,7 +17,7 @@ pimcore.document.document_language_overview = Class.create({
     initialize: function (document) {
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_document_document_languagetreeroot'),
+            url: "/admin/document/language-tree-root",
             params: {
                 id: document.id
             },
@@ -82,7 +82,7 @@ pimcore.document.document_language_overview = Class.create({
         var store = Ext.create('Ext.data.TreeStore', {
             proxy: {
                 type: 'ajax',
-                url: Routing.generate('pimcore_admin_document_document_languagetree'),
+                url: '/admin/document/language-tree',
                 extraParams: {languages:languages.join(',')}
             }
         });
@@ -224,7 +224,7 @@ pimcore.document.document_language_overview = Class.create({
 
     createTranslation: function(record, column, inheritance) {
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_document_document_translationdetermineparent'),
+            url: "/admin/document/translation-determine-parent",
             params: {
                 id: record.data.id,
                 language: column.dataIndex
@@ -288,7 +288,7 @@ pimcore.document.document_language_overview = Class.create({
                                 win.disable();
 
                                 Ext.Ajax.request({
-                                    url: Routing.generate('pimcore_admin_element_getsubtype'),
+                                    url: "/admin/element/get-subtype",
                                     params: {
                                         id: res.targetId,
                                         type: "document"
@@ -306,7 +306,7 @@ pimcore.document.document_language_overview = Class.create({
                                                 }
 
                                                 Ext.Ajax.request({
-                                                    url: Routing.generate('pimcore_admin_document_document_add'),
+                                                    url: "/admin/document/add",
                                                     method: 'POST',
                                                     params: params,
                                                     success: function (response) {

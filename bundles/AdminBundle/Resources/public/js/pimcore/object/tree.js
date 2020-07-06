@@ -14,10 +14,10 @@
 pimcore.registerNS("pimcore.object.tree");
 pimcore.object.tree = Class.create({
 
-    treeDataUrl: null,
+    treeDataUrl: "/admin/object/tree-get-childs-by-id",
 
     initialize: function (config, perspectiveCfg) {
-        this.treeDataUrl = Routing.generate('pimcore_admin_dataobject_dataobject_treegetchildsbyid');
+
         this.perspectiveCfg = perspectiveCfg;
         if (!perspectiveCfg) {
             this.perspectiveCfg = {
@@ -49,7 +49,7 @@ pimcore.object.tree = Class.create({
 
         // get root node config
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_dataobject_dataobject_treegetroot'),
+            url: "/admin/object/tree-get-root",
             params: {
                 id: this.config.rootId,
                 view: this.config.customViewId,
@@ -725,7 +725,7 @@ pimcore.object.tree = Class.create({
 
         if (button == "ok") {
             var options =  {
-                url: Routing.generate('pimcore_admin_dataobject_dataobject_addfolder'),
+                url: "/admin/object/add-folder",
                 elementType : "object",
                 sourceTree: tree,
                 parentId: record.data.id,
@@ -744,7 +744,7 @@ pimcore.object.tree = Class.create({
             }
 
             var options = {
-                url: Routing.generate('pimcore_admin_dataobject_dataobject_add'),
+                url: "/admin/object/add",
                 elementType: "object",
                 sourceTree: tree,
                 parentId: record.data.id,
@@ -767,7 +767,7 @@ pimcore.object.tree = Class.create({
             }
 
             var options = {
-                url: Routing.generate('pimcore_admin_dataobject_dataobject_add'),
+                url: "/admin/object/add",
                 elementType: "object",
                 sourceTree: tree,
                 className: record.data.className,
@@ -839,7 +839,7 @@ pimcore.object.tree = Class.create({
         pimcore.helpers.addTreeNodeLoadingIndicator("object", record.data.id);
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_dataobject_dataobject_copyinfo'),
+            url: "/admin/object/copy-info",
             params: {
                 targetId: record.data.id,
                 sourceId: pimcore.cachedObjectId,
@@ -984,7 +984,7 @@ pimcore.object.tree = Class.create({
         parameters.id = record.data.id;
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_dataobject_dataobject_save', {task: task}),
+            url: '/admin/object/save?task=' + task,
             method: "PUT",
             params: parameters,
             success: function (tree, record, task, response) {
@@ -1027,7 +1027,7 @@ pimcore.object.tree = Class.create({
         };
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_dataobject_dataobject_changechildrensortby'),
+            url: '/admin/object/change-children-sort-by',
             method: "PUT",
             params: parameters,
             success: function (tree, record, sortBy, response) {

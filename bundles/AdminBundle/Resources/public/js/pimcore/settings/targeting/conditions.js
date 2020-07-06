@@ -122,7 +122,7 @@ pimcore.settings.targeting.conditions = (function () {
                             autoDestroy: true,
                             proxy: {
                                 type: 'ajax',
-                                url: Routing.generate('pimcore_admin_misc_countrylist'),
+                                url: "/admin/misc/country-list",
                                 reader: {
                                     type: 'json',
                                     rootProperty: 'data'
@@ -179,7 +179,7 @@ pimcore.settings.targeting.conditions = (function () {
                             autoDestroy: true,
                             proxy: {
                                 type: 'ajax',
-                                url: Routing.generate('pimcore_admin_misc_languagelist'),
+                                url: "/admin/misc/language-list",
                                 reader: {
                                     type: 'json',
                                     rootProperty: 'data'

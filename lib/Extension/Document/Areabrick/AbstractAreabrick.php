@@ -134,17 +134,7 @@ abstract class AbstractAreabrick implements AreabrickInterface, TemplateAreabric
      */
     public function getHtmlTagOpen(Info $info)
     {
-        return '<div class="pimcore_area_' . $info->getId() . ' pimcore_area_content '. $this->getOpenTagCssClass($info) .'">';
-    }
-
-    /**
-     * @param Info $info
-     *
-     * @return string|null
-     */
-    protected function getOpenTagCssClass(Info $info)
-    {
-        return null;
+        return '<div class="pimcore_area_' . $info->getId() . ' pimcore_area_content">';
     }
 
     /**

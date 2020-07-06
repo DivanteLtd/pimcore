@@ -57,7 +57,7 @@ pimcore.settings.glossary = Class.create({
 
         var itemsPerPage = pimcore.helpers.grid.getDefaultPageSize();
         this.store = pimcore.helpers.grid.buildDefaultStore(
-            Routing.generate('pimcore_admin_settings_glossary'),
+            '/admin/settings/glossary?',
             [
                 'id', {name: 'text', allowBlank: false}, 'language', 'casesensitive', 'exactmatch',
                 'site', 'link', 'acronym', 'creationDate', 'modificationDate'
@@ -183,12 +183,7 @@ pimcore.settings.glossary = Class.create({
         this.grid = Ext.create('Ext.grid.Panel', {
             autoScroll: true,
             store: this.store,
-            columns: {
-                items: typesColumns,
-                defaults: {
-                    renderer: Ext.util.Format.htmlEncode
-                },
-            },
+            columns : typesColumns,
             selModel: Ext.create('Ext.selection.RowModel', {}),
             plugins: [
                 this.cellEditing

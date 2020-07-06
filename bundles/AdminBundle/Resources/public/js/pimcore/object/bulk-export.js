@@ -22,7 +22,7 @@ pimcore.object.bulkexport = Class.create(pimcore.object.bulkbase, {
     export: function() {
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_dataobject_class_bulkexport'),
+            url: "/admin/class/bulk-export",
             method: "GET",
             success: function(transport){
                 var data = Ext.decode(transport.responseText);
@@ -170,7 +170,7 @@ pimcore.object.bulkexport = Class.create(pimcore.object.bulkbase, {
         this.sortValues();
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_dataobject_class_bulkexportprepare'),
+            url: "/admin/class/bulk-export-prepare",
             method: "post",
             params: {
                 data: JSON.stringify(this.values)
@@ -179,7 +179,7 @@ pimcore.object.bulkexport = Class.create(pimcore.object.bulkbase, {
                 var data = Ext.decode(transport.responseText);
 
                 if (data.success) {
-                    var url = Routing.generate('pimcore_admin_dataobject_class_dobulkexport');
+                    var url = "/admin/class/do-bulk-export";
                     pimcore.settings.showCloseConfirmation = false;
                     window.setTimeout(function () {
                         pimcore.settings.showCloseConfirmation = true;

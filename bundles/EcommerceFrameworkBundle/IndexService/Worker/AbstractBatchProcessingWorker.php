@@ -30,9 +30,6 @@ use Pimcore\Model\DataObject\Localizedfield;
  * Provides worker functionality for batch preparing data and updating index
  *
  * @property AbstractConfig $tenantConfig
- *
- * @deprecated will be removed in Pimcore 7.0 use ProductCentricBatchProcessing instead
- * @TODO Pimcore 7 - remove this
  */
 abstract class AbstractBatchProcessingWorker extends AbstractWorker implements BatchProcessingWorkerInterface
 {
@@ -269,7 +266,7 @@ abstract class AbstractBatchProcessingWorker extends AbstractWorker implements B
                 $jsonData = json_encode([
                     'data' => $data,
                     'relations' => ($relationData ? $relationData : []),
-                    'subtenants' => ($subTenantData ? $subTenantData : []),
+                    'subtenants' => ($subTenantData ? $subTenantData : [])
                 ]);
 
                 $jsonLastError = \json_last_error();
@@ -287,11 +284,21 @@ abstract class AbstractBatchProcessingWorker extends AbstractWorker implements B
                 }
 
                 $crc = crc32($jsonData);
-
-                $preparationErrorDb = '';
-                $hasError = !(count($attributeErrors) <= 0 && count($generalErrors) <= 0);
-
-                if ($hasError) {
+                if (count($attributeErrors) <= 0 && count($generalErrors) <= 0) {
+                    $processedSubObjects[$subObjectId] = $object;
+                    $insertData = [
+                        'o_id' => $subObjectId,
+                        'o_virtualProductId' => $data['o_virtualProductId'],
+                        'tenant' => $this->name,
+                        'data' => $jsonData,
+                        'crc_current' => $crc,
+                        'preparation_worker_timestamp' => 0,
+                        'preparation_worker_id' => $this->db->quote(null),
+                        'in_preparation_queue' => (int)false,
+                        'preparation_status' => self::INDEX_STATUS_PREPARATION_STATUS_DONE,
+                        'preparation_error' => ''
+                    ];
+                } else {
                     $preparationError = '';
                     if (count($generalErrors) > 0) {
                         $preparationError = implode(', ', $generalErrors);
@@ -304,25 +311,21 @@ abstract class AbstractBatchProcessingWorker extends AbstractWorker implements B
                     if (strlen($preparationErrorDb) > 255) {
                         $preparationErrorDb = substr($preparationErrorDb, 0, 252).'...';
                     }
-                }
-
-                $insertData = [
-                    'o_id' => $subObjectId,
-                    'o_virtualProductId' => $data['o_virtualProductId'],
-                    'tenant' => $this->name,
-                    'data' => $jsonData,
-                    'crc_current' => $crc,
-                    'in_preparation_queue' => $hasError ? (int)true : (int)false,
-                    'preparation_status' => $hasError ? self::INDEX_STATUS_PREPARATION_STATUS_ERROR : self::INDEX_STATUS_PREPARATION_STATUS_DONE,
-                    'preparation_error' => $preparationErrorDb,
-                ];
-
-                if ($hasError) {
+                    $insertData = [
+                        'o_id' => $subObjectId,
+                        'o_virtualProductId' => $data['o_virtualProductId'],
+                        'tenant' => $this->name,
+                        'data' => $jsonData,
+                        'crc_current' => time(), //force update by setting crc_current to timestamp. If empty, no update will take place.
+                        //'preparation_worker_timestamp' => 0,
+                        //'preparation_worker_id' => $this->db->quote(null),
+                        'in_preparation_queue' => (int)true,
+                        'preparation_status' => self::INDEX_STATUS_PREPARATION_STATUS_ERROR,
+                        'preparation_error' => $preparationErrorDb
+                    ];
                     Logger::alert(sprintf('Mark product "%s" with preparation error.', $subObjectId),
                         array_merge($generalErrors, $attributeErrors)
                     );
-                } else {
-                    $processedSubObjects[$subObjectId] = $object;
                 }
                 $this->insertDataToIndex($insertData, $subObjectId);
             } else {
@@ -349,18 +352,9 @@ abstract class AbstractBatchProcessingWorker extends AbstractWorker implements B
         if (!$currentEntry) {
             $this->db->insert($this->getStoreTableName(), $data);
         } elseif ($currentEntry['crc_current'] != $data['crc_current']) {
-            $this->executeTransactionalQuery(function () use ($data, $subObjectId) {
-                $data['preparation_worker_timestamp'] = 0;
-                $data['preparation_worker_id'] = $this->db->quote(null);
-
-                $this->db->updateWhere($this->getStoreTableName(), $data, 'o_id = ' . $this->db->quote((string)$subObjectId) . ' AND tenant = ' . $this->db->quote($this->name));
-            });
+            $this->db->updateWhere($this->getStoreTableName(), $data, 'o_id = ' . $this->db->quote((string)$subObjectId) . ' AND tenant = ' . $this->db->quote($this->name));
         } elseif ($currentEntry['in_preparation_queue']) {
-
-            //since no data has changed, just update flags, not data
-            $this->executeTransactionalQuery(function () use ($subObjectId) {
-                $this->db->query('UPDATE ' . $this->getStoreTableName() . ' SET in_preparation_queue = 0, preparation_worker_timestamp = 0, preparation_worker_id = null WHERE o_id = ? AND tenant = ?', [$subObjectId, $this->name]);
-            });
+            $this->db->query('UPDATE ' . $this->getStoreTableName() . ' SET in_preparation_queue = 0, preparation_worker_timestamp = 0, preparation_worker_id = null WHERE o_id = ? AND tenant = ?', [$subObjectId, $this->name]);
         }
     }
 
@@ -377,8 +371,6 @@ abstract class AbstractBatchProcessingWorker extends AbstractWorker implements B
      * fills queue based on path
      *
      * @param IndexableInterface $object
-     *
-     * @throws \Exception
      */
     public function fillupPreparationQueue(IndexableInterface $object)
     {
@@ -387,18 +379,13 @@ abstract class AbstractBatchProcessingWorker extends AbstractWorker implements B
             //need check, if there are sub objects because update on empty result set is too slow
             $objects = $this->db->fetchCol('SELECT o_id FROM objects WHERE o_path LIKE ?', [$object->getFullPath() . '/%']);
             if ($objects) {
-                $this->executeTransactionalQuery(function () use ($objects) {
-                    $updateStatement = 'UPDATE ' . $this->getStoreTableName() . ' SET in_preparation_queue = 1 WHERE tenant = ? AND o_id IN ('.implode(',', $objects).')';
-                    $this->db->query($updateStatement, [$this->name]);
-                });
+                $updateStatement = 'UPDATE ' . $this->getStoreTableName() . ' SET in_preparation_queue = 1 WHERE tenant = ? AND o_id IN ('.implode(',', $objects).')';
+                $this->db->query($updateStatement, [$this->name]);
             }
         }
     }
 
     /**
-     * @deprecated will be removed in Pimcore 7.0
-     * @TODO Pimcore 7 - remove this
-     *
      * processes elements in the queue for preparation of index data
      * can be run in parallel since each thread marks the entries it is working on and only processes these entries
      *
@@ -408,12 +395,6 @@ abstract class AbstractBatchProcessingWorker extends AbstractWorker implements B
      */
     public function processPreparationQueue($limit = 200)
     {
-        @trigger_error(
-            'Method AbstractBatchProcessingWorker::processPrepartionQueue is deprecated since version 6.7.0 and will be removed in 7.0.0. ' .
-            'Use ecommerce:indexservice:process-preparation-queue command instead.',
-            E_USER_DEPRECATED
-        );
-
         $workerId = uniqid();
         $workerTimestamp = time();
         $this->db->query(
@@ -448,9 +429,6 @@ abstract class AbstractBatchProcessingWorker extends AbstractWorker implements B
     }
 
     /**
-     * @deprecated will be removed in Pimcore 7.0
-     * @TODO Pimcore 7 - remove this
-     *
      * processes the update index queue - updates all elements where current_crc != index_crc
      * can be run in parallel since each thread marks the entries it is working on and only processes these entries
      *
@@ -460,12 +438,6 @@ abstract class AbstractBatchProcessingWorker extends AbstractWorker implements B
      */
     public function processUpdateIndexQueue($limit = 200)
     {
-        @trigger_error(
-            'Method AbstractBatchProcessingWorker::processUpdateIndexQueue is deprecated since version 6.7.0 and will be removed in 7.0.0. ' .
-            'Use ecommerce:indexservice:process-update-queue command instead.',
-            E_USER_DEPRECATED
-        );
-
         $workerId = uniqid();
         $workerTimestamp = time();
         $entries = [];
@@ -504,7 +476,7 @@ abstract class AbstractBatchProcessingWorker extends AbstractWorker implements B
 
         //process entries (outside transaction, as worker ID is secured).
         foreach ($entries as $entry) {
-            Logger::info("Worker $workerId updating index for element " . $entry['o_id']);
+            Logger::info("Worker $workerId updating index for element " . $entry['id']);
             $data = json_decode($entry['data'], true);
             $this->doUpdateIndex($entry['o_id'], $data, $entry['metadata']);
         }
@@ -529,7 +501,7 @@ abstract class AbstractBatchProcessingWorker extends AbstractWorker implements B
                         in_preparation_queue = 1 WHERE tenant = ?";
         $this->db->query($query, [
             sprintf('Reset preparation queue in "%s".', $className),
-            $this->name,
+            $this->name
         ]);
     }
 
@@ -548,37 +520,7 @@ abstract class AbstractBatchProcessingWorker extends AbstractWorker implements B
                         crc_index = 0 WHERE tenant = ?';
         $this->db->query($query, [
             sprintf('Reset indexing queue in "%s".', $className),
-            $this->name,
+            $this->name
         ]);
-    }
-
-    /**
-     * @param \Closure $fn
-     * @param int $maxTries
-     * @param float $sleep
-     *
-     * @return bool
-     *
-     * @throws \Exception
-     */
-    protected function executeTransactionalQuery(\Closure $fn, int $maxTries = 3, float $sleep = .5)
-    {
-        $this->db->beginTransaction();
-        for ($i = 1; $i <= $maxTries; $i++) {
-            try {
-                $fn();
-
-                return $this->db->commit();
-            } catch (\Exception $e) {
-                $this->db->rollBack();
-                Logger::warning("Executing transational query, no. {$i} of {$maxTries} tries failed. " . $e->getMessage());
-                if ($i === $maxTries) {
-                    throw $e;
-                }
-                usleep($sleep * 1000000);
-            }
-        }
-
-        return false;
     }
 }

@@ -279,6 +279,7 @@ Ext.onReady(function () {
     var user = new pimcore.user(pimcore.currentuser);
     pimcore.globalmanager.add("user", user);
 
+    var docTypesUrl = '/admin/document/doc-types?';
     // document types
     Ext.define('pimcore.model.doctypes', {
         extend: 'Ext.data.Model',
@@ -316,10 +317,10 @@ Ext.onReady(function () {
                 encode: 'true'
             },
             api: {
-                create: Routing.generate('pimcore_admin_document_document_doctypesget', {xaction: "create"}),
-                read: Routing.generate('pimcore_admin_document_document_doctypesget', {xaction: "read"}),
-                update: Routing.generate('pimcore_admin_document_document_doctypesget', {xaction: "update"}),
-                destroy: Routing.generate('pimcore_admin_document_document_doctypesget', {xaction: "destroy"}),
+                create: docTypesUrl + "xaction=create",
+                read: docTypesUrl + "xaction=read",
+                update: docTypesUrl + "xaction=update",
+                destroy: docTypesUrl + "xaction=destroy"
             }
         }
     });
@@ -360,7 +361,7 @@ Ext.onReady(function () {
         fields: objectClassFields,
         proxy: {
             type: 'ajax',
-            url: Routing.generate('pimcore_admin_dataobject_class_gettree'),
+            url: '/admin/class/get-tree',
             reader: {
                 type: 'json'
             }
@@ -382,7 +383,7 @@ Ext.onReady(function () {
         fields: objectClassFields,
         proxy: {
             type: 'ajax',
-            url: Routing.generate('pimcore_admin_dataobject_class_gettree', {createAllowed: true}),
+            url: '/admin/class/get-tree?createAllowed=true',
             reader: {
                 type: 'json'
             }
@@ -409,7 +410,7 @@ Ext.onReady(function () {
         ],
         proxy: {
             type: 'ajax',
-            url: Routing.generate('pimcore_admin_settings_getavailableadminlanguages'),
+            url: '/admin/settings/get-available-admin-languages',
             reader: {
                 type: 'json'
             }
@@ -428,7 +429,7 @@ Ext.onReady(function () {
         fields: ["id", "domains", "rootId", "rootPath", "domain"],
         proxy: {
             type: 'ajax',
-            url: Routing.generate('pimcore_admin_settings_getavailablesites'),
+            url: '/admin/settings/get-available-sites',
             reader: {
                 type: 'json'
             }
@@ -454,7 +455,7 @@ Ext.onReady(function () {
         model: "pimcore.model.target_groups",
         proxy: {
             type: 'ajax',
-            url: Routing.generate('pimcore_admin_targeting_targetgrouplist'),
+            url: '/admin/targeting/target-group/list',
             reader: {
                 type: 'json'
             }
@@ -520,14 +521,14 @@ Ext.onReady(function () {
 
                 if (data.pushStatistics) {
                     var request = new XMLHttpRequest();
-                    request.open('GET', Routing.generate('pimcore_admin_index_statistics'));
+                    request.open('GET', "/admin/index/statistics", false);
 
                     request.onload = function () {
                         if (this.status >= 200 && this.status < 400) {
                             var res = Ext.decode(this.response);
 
                             var request = new XMLHttpRequest();
-                            request.open('POST', "https://liveupdate.pimcore.org/statistics");
+                            request.open('POST', "https://liveupdate.pimcore.org/statistics", false);
 
                             var data = new FormData();
                             data.append('data', encodeURIComponent(JSON.stringify(res)));
@@ -757,12 +758,6 @@ Ext.onReady(function () {
                         if (user.isAllowed(treetype + "s")) {
                             treepanel = Ext.getCmp("pimcore_panel_tree_" + side);
 
-                            // Do not add pimcore_icon_material class to non-material icons
-                            let iconTypeClass = '';
-                            if (treeConfig.icon.match('flat-white')) {
-                                iconTypeClass += 'pimcore_icon_material';
-                            }
-
                             var treeCls = window.pimcore[treetype].customviews.tree;
 
                             tree = new treeCls({
@@ -772,7 +767,7 @@ Ext.onReady(function () {
                                 rootId: treeConfig.rootId,
                                 rootVisible: treeConfig.showroot,
                                 treeId: "pimcore_panel_tree_" + treetype + "_" + treeConfig.id,
-                                treeIconCls: "pimcore_" + treetype + "_customview_icon_" + treeConfig.id + " " + iconTypeClass,
+                                treeIconCls: "pimcore_" + treetype + "_customview_icon_" + treeConfig.id + " pimcore_icon_material",
                                 treeTitle: t(treeConfig.name),
                                 parentPanel: treepanel,
                                 loaderBaseParams: {}
@@ -864,7 +859,7 @@ Ext.onReady(function () {
     var quicksearchStore = new Ext.data.Store({
         proxy: {
             type: 'ajax',
-            url: Routing.generate('pimcore_admin_searchadmin_search_quicksearch'),
+            url: '/admin/search/search/quicksearch',
             reader: {
                 type: 'json',
                 rootProperty: 'data'
@@ -976,7 +971,7 @@ pimcore["intervals"]["translations_admin_missing"] = window.setInterval(function
         pimcore.globalmanager.add("translations_admin_missing", restMissingTranslations);
         Ext.Ajax.request({
             method: "POST",
-            url: Routing.generate('pimcore_admin_translation_addadmintranslationkeys'),
+            url: "/admin/translation/add-admin-translation-keys",
             params: {keys: params}
         });
     }
@@ -985,7 +980,7 @@ pimcore["intervals"]["translations_admin_missing"] = window.setInterval(function
 // session renew
 pimcore["intervals"]["ping"] = window.setInterval(function () {
     Ext.Ajax.request({
-        url: Routing.generate('pimcore_admin_misc_ping'),
+        url: "/admin/misc/ping",
         success: function (response) {
 
             var data;
@@ -999,7 +994,7 @@ pimcore["intervals"]["ping"] = window.setInterval(function () {
             } catch (e) {
                 data = false;
                 pimcore.settings.showCloseConfirmation = false;
-                window.location.href = Routing.generate('pimcore_admin_login', {session_expired: true});
+                window.location.href = "/admin/login?session_expired=true";
             }
 
             if (pimcore.maintenanceWindow) {
@@ -1017,8 +1012,7 @@ pimcore["intervals"]["ping"] = window.setInterval(function () {
         failure: function (response) {
             if (response.status != 503) {
                 pimcore.settings.showCloseConfirmation = false;
-                window.location.href = Routing.generate('pimcore_admin_login', {session_expired: true, server_error: true});
-
+                window.location.href = "/admin/login?session_expired=true&server_error=true";
             }
         }
     });

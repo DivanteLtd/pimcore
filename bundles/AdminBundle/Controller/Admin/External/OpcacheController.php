@@ -26,7 +26,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class OpcacheController extends AdminController implements EventedControllerInterface
 {
     /**
-     * @Route("/external_opcache", name="pimcore_admin_external_opcache_index")
+     * @Route("/external_opcache")
      *
      * @param Request $request
      * @param Profiler $profiler

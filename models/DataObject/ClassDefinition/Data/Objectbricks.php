@@ -95,7 +95,7 @@ class Objectbricks extends Data implements CustomResourcePersistingInterface
      * @see Data::getDataForEditmode
      *
      * @param string $data
-     * @param null|DataObject\Concrete $object
+     * @param null|Model\DataObject\AbstractObject $object
      * @param array $params
      *
      * @return array
@@ -188,7 +188,7 @@ class Objectbricks extends Data implements CustomResourcePersistingInterface
             'type' => $item->getType(),
             'metaData' => $brickMetaData,
             'inherited' => $inherited,
-            'title' => $brickDefinition->getTitle(),
+            'title' => $brickDefinition->getTitle()
         ];
 
         return $editmodeDataItem;
@@ -328,8 +328,8 @@ class Objectbricks extends Data implements CustomResourcePersistingInterface
                                         'context' => [
                                             'containerType' => 'objectbrick',
                                             'containerKey' => $collectionRaw['type'],
-                                            'fieldname' => $this->getName(),
-                                        ],
+                                            'fieldname' => $this->getName()
+                                        ]
                                     ]);
                         }
                     }
@@ -495,7 +495,7 @@ class Objectbricks extends Data implements CustomResourcePersistingInterface
     /**
      * @deprecated
      *
-     * @param DataObject\Concrete $object
+     * @param Model\DataObject\AbstractObject $object
      * @param mixed $params
      *
      * @return mixed
@@ -741,38 +741,30 @@ class Objectbricks extends Data implements CustomResourcePersistingInterface
      */
     public function checkValidity($data, $omitMandatoryCheck = false)
     {
-        if ($data instanceof DataObject\Objectbrick) {
-            $validationExceptions = [];
+        if (!$omitMandatoryCheck) {
+            if ($data instanceof DataObject\Objectbrick) {
+                $validationExceptions = [];
 
-            $itemCount = 0;
-            $allowedTypes = $this->getAllowedTypes();
-            foreach ($allowedTypes as $allowedType) {
-                $getter = 'get' . ucfirst($allowedType);
-                /** @var DataObject\Objectbrick\Data\AbstractData $item */
-                $item = $data->$getter();
+                $allowedTypes = $this->getAllowedTypes();
+                foreach ($allowedTypes as $allowedType) {
+                    $getter = 'get' . ucfirst($allowedType);
+                    /** @var DataObject\Objectbrick\Data\AbstractData $item */
+                    $item = $data->$getter();
 
-                if ($item instanceof DataObject\Objectbrick\Data\AbstractData) {
-                    if ($item->getDoDelete()) {
-                        continue;
-                    }
+                    if ($item instanceof DataObject\Objectbrick\Data\AbstractData) {
+                        if ($item->getDoDelete()) {
+                            continue;
+                        }
 
-                    $itemCount++;
+                        if (!$collectionDef = DataObject\Objectbrick\Definition::getByKey($item->getType())) {
+                            continue;
+                        }
 
-                    if (!$collectionDef = DataObject\Objectbrick\Definition::getByKey($item->getType())) {
-                        continue;
-                    }
+                        //needed when new brick is added but not saved yet - then validity check fails.
+                        if (!$item->getFieldname()) {
+                            $item->setFieldname($data->getFieldname());
+                        }
 
-                    //max limit check should be performed irrespective of omitMandatory check
-                    if (!empty($this->maxItems) && $itemCount > $this->maxItems) {
-                        throw new Model\Element\ValidationException('Maximum limit reached for items in brick: ' . $this->getName());
-                    }
-
-                    //needed when new brick is added but not saved yet - then validity check fails.
-                    if (!$item->getFieldname()) {
-                        $item->setFieldname($data->getFieldname());
-                    }
-
-                    if (!$omitMandatoryCheck) {
                         foreach ($collectionDef->getFieldDefinitions() as $fd) {
                             try {
                                 $key = $fd->getName();
@@ -785,12 +777,12 @@ class Objectbricks extends Data implements CustomResourcePersistingInterface
                         }
                     }
                 }
-            }
 
-            if ($validationExceptions) {
-                $aggregatedExceptions = new Model\Element\ValidationException('invalid brick ' . $this->getName());
-                $aggregatedExceptions->setSubItems($validationExceptions);
-                throw $aggregatedExceptions;
+                if ($validationExceptions) {
+                    $aggregatedExceptions = new Model\Element\ValidationException('invalid brick ' . $this->getName());
+                    $aggregatedExceptions->setSubItems($validationExceptions);
+                    throw $aggregatedExceptions;
+                }
             }
         }
     }
@@ -876,7 +868,7 @@ class Objectbricks extends Data implements CustomResourcePersistingInterface
                 $brickdata = [
                     'brick' => substr($getter, 3),
                     'name' => $fd->getName(),
-                    'subdata' => $subdata,
+                    'subdata' => $subdata
                 ];
                 $diffdata['data'] = $brickdata;
             }

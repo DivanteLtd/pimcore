@@ -48,7 +48,7 @@ pimcore.settings.gdpr.dataproviders.pimcoreUsers = Class.create({
             pageSize: pimcore.helpers.grid.getDefaultPageSize(),
             proxy : {
                 type: 'ajax',
-                url: Routing.generate('pimcore_admin_gdpr_pimcoreusers_searchusers'),
+                url: "/admin/gdpr/pimcore-users/search-users",
                 reader: {
                     type: 'json',
                     rootProperty: 'data'
@@ -80,7 +80,7 @@ pimcore.settings.gdpr.dataproviders.pimcoreUsers = Class.create({
                             }
 
                             var data = grid.getStore().getAt(rowIndex);
-                            pimcore.helpers.download(Routing.generate('pimcore_admin_gdpr_pimcoreusers_exportuserdata', {id: data.data.id}));
+                            pimcore.helpers.download("/admin/gdpr/pimcore-users/export-user-data?id=" + data.data.id);
                         }.bind(this),
                         getClass: function(v, meta, rec) {
                             if(!user.isAllowed('users')){
@@ -114,7 +114,7 @@ pimcore.settings.gdpr.dataproviders.pimcoreUsers = Class.create({
                                 fn: function (button) {
                                     if (button == "yes") {
                                         Ext.Ajax.request({
-                                            url: Routing.generate('pimcore_admin_user_delete'),
+                                            url: "/admin/user/delete",
                                             method: 'DELETE',
                                             params: {
                                                 id: data.data.id

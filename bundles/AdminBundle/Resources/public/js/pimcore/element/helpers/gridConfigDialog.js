@@ -148,7 +148,7 @@ pimcore.element.helpers.gridConfigDialog = Class.create({
                 autoLoad: true,
                 proxy: {
                     type: 'ajax',
-                    url: Routing.generate('pimcore_admin_user_getusersforsharing'),
+                    url: '/admin/user/get-users-for-sharing',
                     reader: {
                         rootProperty: 'data',
                         idProperty: 'id'
@@ -162,7 +162,7 @@ pimcore.element.helpers.gridConfigDialog = Class.create({
                 autoLoad: true,
                 proxy: {
                     type: 'ajax',
-                    url: Routing.generate('pimcore_admin_user_getrolesforsharing'),
+                    url: '/admin/user/get-roles-for-sharing',
                     reader: {
                         rootProperty: 'data',
                         idProperty: 'id'

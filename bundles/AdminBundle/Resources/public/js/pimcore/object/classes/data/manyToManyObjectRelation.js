@@ -104,7 +104,7 @@ pimcore.object.classes.data.manyToManyObjectRelation = Class.create(pimcore.obje
         var classesStore = new Ext.data.Store({
             proxy: {
                 type: 'ajax',
-                url: Routing.generate('pimcore_admin_dataobject_class_gettree')
+                url: '/admin/class/get-tree'
             },
             autoDestroy: true,
             fields: ["text"]
@@ -142,7 +142,7 @@ pimcore.object.classes.data.manyToManyObjectRelation = Class.create(pimcore.obje
         this.fieldStore = new Ext.data.Store({
             proxy: {
                 type: 'ajax',
-                url: Routing.generate('pimcore_admin_dataobject_dataobjecthelper_getavailablevisiblefields'),
+                url: '/admin/object-helper/get-available-visible-vields',
                 extraParams: {
                     // no_brick_columns: "true",
                     // gridtype: 'all',

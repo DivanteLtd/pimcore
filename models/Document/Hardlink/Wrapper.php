@@ -41,27 +41,17 @@ trait Wrapper
      */
     public function save()
     {
-        throw $this->getHardlinkError();
+        $this->raiseHardlinkError();
     }
 
-    /**
-     * @param array $params
-     *
-     * @throws \Exception
-     */
     protected function update($params = [])
     {
-        throw $this->getHardlinkError();
+        $this->raiseHardlinkError();
     }
 
-    /**
-     * @param bool $isNested
-     *
-     * @throws \Exception
-     */
     public function delete(bool $isNested = false)
     {
-        throw $this->getHardlinkError();
+        $this->raiseHardlinkError();
     }
 
     /**
@@ -180,11 +170,11 @@ trait Wrapper
     }
 
     /**
-     * @return \Exception
+     * @throws \Exception
      */
-    protected function getHardlinkError(): \Exception
+    protected function raiseHardlinkError()
     {
-        return new \Exception('Method not supported by hard linked documents');
+        throw new \Exception('Method no supported by hardlinked documents');
     }
 
     /**

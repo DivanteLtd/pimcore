@@ -22,12 +22,15 @@ use Pimcore\Web2Print\Processor;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 class PrintpageControllerBase extends DocumentControllerBase
 {
     use ElementEditLockHelperTrait;
 
     /**
+     * @Route("/get-data-by-id", methods={"GET"})
+     *
      * @param Request $request
      *
      * @return JsonResponse
@@ -78,6 +81,8 @@ class PrintpageControllerBase extends DocumentControllerBase
     }
 
     /**
+     * @Route("/save", methods={"PUT", "POST"})
+     *
      * @param Request $request
      *
      * @return JsonResponse
@@ -124,9 +129,9 @@ class PrintpageControllerBase extends DocumentControllerBase
                 'success' => true,
                 'data' => [
                     'versionDate' => $page->getModificationDate(),
-                    'versionCount' => $page->getVersionCount(),
+                    'versionCount' => $page->getVersionCount()
                 ],
-                'treeData' => $treeData,
+                'treeData' => $treeData
             ]);
         } elseif ($page->isAllowed('save')) {
             $this->setValuesToDocument($request, $page);
@@ -150,6 +155,8 @@ class PrintpageControllerBase extends DocumentControllerBase
     }
 
     /**
+     * @Route("/active-generate-process", methods={"POST"})
+     *
      * @param Request $request
      *
      * @return JsonResponse
@@ -181,11 +188,13 @@ class PrintpageControllerBase extends DocumentControllerBase
             'date' => $date,
             'message' => $document->getLastGenerateMessage(),
             'downloadAvailable' => file_exists($document->getPdfFileName()),
-            'statusUpdate' => $statusUpdate,
+            'statusUpdate' => $statusUpdate
         ]);
     }
 
     /**
+     * @Route("/pdf-download", methods={"GET"})
+     *
      * @param Request $request
      *
      * @throws \Exception
@@ -214,6 +223,8 @@ class PrintpageControllerBase extends DocumentControllerBase
     }
 
     /**
+     * @Route("/start-pdf-generation", methods={"POST"})
+     *
      * @param Request $request
      * @param Config $config
      *
@@ -250,6 +261,8 @@ class PrintpageControllerBase extends DocumentControllerBase
     }
 
     /**
+     * @Route("/check-pdf-dirty", methods={"GET"})
+     *
      * @param Request $request
      *
      * @return JsonResponse
@@ -267,6 +280,8 @@ class PrintpageControllerBase extends DocumentControllerBase
     }
 
     /**
+     * @Route("/get-processing-options", methods={"GET"})
+     *
      * @param Request $request
      *
      * @return JsonResponse
@@ -290,7 +305,7 @@ class PrintpageControllerBase extends DocumentControllerBase
                 'label' => $option['name'],
                 'value' => $value,
                 'type' => $option['type'],
-                'values' => isset($option['values']) ? $option['values'] : null,
+                'values' => isset($option['values']) ? $option['values'] : null
             ];
         }
 
@@ -322,6 +337,8 @@ class PrintpageControllerBase extends DocumentControllerBase
     }
 
     /**
+     * @Route("/cancel-generation", methods={"DELETE"})
+     *
      * @param Request $request
      *
      * @return JsonResponse

@@ -20,7 +20,7 @@ pimcore.settings.user.usertab = Class.create({
         this.id = id;
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_user_get'),
+            url: "/admin/user/get",
             success: this.loadComplete.bind(this),
             params: {
                 id: this.id
@@ -124,7 +124,7 @@ pimcore.settings.user.usertab = Class.create({
 
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_user_update'),
+            url: "/admin/user/update",
             method: "PUT",
             params: data,
             success: function (transport) {

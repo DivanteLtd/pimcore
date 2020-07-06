@@ -159,7 +159,6 @@ class TagHandler implements TagHandlerInterface, LoggerAwareInterface
             $name = $brick->getName();
             $desc = $brick->getDescription();
             $icon = $brick->getIcon();
-            $limit = $options['limits'][$brick->getId()] ?? null;
 
             // autoresolve icon as <bundleName>/Resources/public/areas/<id>/icon.png
             if (null === $icon) {
@@ -189,7 +188,6 @@ class TagHandler implements TagHandlerInterface, LoggerAwareInterface
                 'description' => $desc,
                 'type' => $brick->getId(),
                 'icon' => $icon,
-                'limit' => $limit,
             ];
         }
 
@@ -244,41 +242,42 @@ class TagHandler implements TagHandlerInterface, LoggerAwareInterface
             throw $e;
         }
 
-        // general parameters
         $editmode = $view->editmode;
-        $forceEditInView = array_key_exists('forceEditInView', $params) && $params['forceEditInView'];
 
-        // view parameters
-        $viewParameters = array_merge($view->getParameters()->all(), [
-            // enable editmode if editmode is active and the brick has no edit template or edit in view is forced
-            'editmode' => $editmode ? (!$brick->hasEditTemplate() || $forceEditInView) : false,
-        ]);
-
-        // edit parameters
-        $editTemplate = null;
-        $editParameters = [];
+        echo $brick->getHtmlTagOpen($info);
 
         if ($brick->hasEditTemplate() && $editmode) {
-            $editTemplate = $this->resolveBrickTemplate($brick, 'edit');
-            $editParameters = array_merge($view->getParameters()->all(), [
-                'editmode' => true,
-            ]);
+            echo '<div class="pimcore_area_edit_button" data-name="' . $tag->getName() . '" data-real-name="' . $tag->getRealName() . '"></div>';
+
+            // forces the editmode in view independent if there's an edit or not
+            if (!array_key_exists('forceEditInView', $params) || !$params['forceEditInView']) {
+                $view->editmode = false;
+            }
         }
 
-        // render complete areabrick
-        // passing the engine interface is necessary otherwise rendering a
-        // php template inside the twig template returns the content of the php file
-        // instead of actually parsing the php template
-        echo $this->templating->render('PimcoreCoreBundle:Areabrick:wrapper.html.twig', [
-            'brick' => $brick,
-            'info' => $info,
-            'templating' => $this->templating,
-            'editmode' => $editmode,
-            'viewTemplate' => $viewTemplate,
-            'viewParameters' => $viewParameters,
-            'editTemplate' => $editTemplate,
-            'editParameters' => $editParameters,
-        ]);
+        // render view template
+        echo $this->templating->render(
+            $viewTemplate,
+            $view->getParameters()->all()
+        );
+
+        if ($brick->hasEditTemplate() && $editmode) {
+            $view->editmode = true;
+
+            echo '<div class="pimcore_area_editmode pimcore_area_editmode_hidden" data-name="' . $tag->getName() . '" data-real-name="' . $tag->getRealName() . '">';
+
+            $editTemplate = $this->resolveBrickTemplate($brick, 'edit');
+
+            // render edit template
+            echo $this->templating->render(
+                $editTemplate,
+                $view->getParameters()->all()
+            );
+
+            echo '</div>';
+        }
+
+        echo $brick->getHtmlTagClose($info);
 
         if ($brickInfoRestoreValue === null) {
             $request->attributes->remove(self::ATTRIBUTE_AREABRICK_INFO);

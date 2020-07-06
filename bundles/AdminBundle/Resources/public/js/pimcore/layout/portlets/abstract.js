@@ -45,7 +45,7 @@ pimcore.layout.portlets.abstract = Class.create({
         column.remove(portlet, true);
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_portal_removewidget'),
+            url: "/admin/portal/remove-widget",
             method: 'DELETE',
             params: {
                 key: this.portal.key,

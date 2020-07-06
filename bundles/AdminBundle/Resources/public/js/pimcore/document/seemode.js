@@ -92,7 +92,7 @@ pimcore.document.seemode = Class.create({
 
         // get current location
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_document_document_getidforpath'),
+            url: "/admin/document/get-id-for-path",
             params: {
                 path: window["pimcore_seemode"].location.pathname
             },

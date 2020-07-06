@@ -16,11 +16,7 @@ pimcore.object.gridexport.csv = Class.create(pimcore.element.gridexport.abstract
     name: "csv",
     text: t("export_csv"),
     warningText: t('csv_object_export_warning'),
-
-    getDownloadUrl: function(fileHandle) {
-         return Routing.generate('pimcore_admin_dataobject_dataobjecthelper_downloadcsvfile', {fileHandle: fileHandle});
-    },
-
+    downloadUrl: "/admin/object-helper/download-csv-file",
     getObjectSettingsContainer: function () {
         var enableInheritance = new Ext.form.Checkbox({
             fieldLabel: t('enable_inheritance'),

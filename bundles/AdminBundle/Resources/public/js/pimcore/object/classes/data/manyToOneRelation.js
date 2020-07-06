@@ -98,7 +98,7 @@ pimcore.object.classes.data.manyToOneRelation = Class.create(pimcore.object.clas
             autoDestroy: true,
             proxy: {
                 type: 'ajax',
-                url: Routing.generate('pimcore_admin_dataobject_class_gettree')
+                url: '/admin/class/get-tree'
             },
             fields: ["text"]
         });
@@ -117,7 +117,7 @@ pimcore.object.classes.data.manyToOneRelation = Class.create(pimcore.object.clas
             autoDestroy: true,
             proxy: {
                 type: 'ajax',
-                url: Routing.generate('pimcore_admin_dataobject_class_getdocumenttypes')
+                url: '/admin/class/get-document-types'
             },
             fields: ["text"]
         });
@@ -133,7 +133,7 @@ pimcore.object.classes.data.manyToOneRelation = Class.create(pimcore.object.clas
             autoDestroy: true,
             proxy: {
                 type: 'ajax',
-                url: Routing.generate('pimcore_admin_dataobject_class_getassettypes')
+                url: '/admin/class/get-asset-types'
             },
             fields: ["text"]
         });

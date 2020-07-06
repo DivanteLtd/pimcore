@@ -23,7 +23,7 @@ use Pimcore\Logger;
 /**
  * provides worker functionality for mockup cache and central store table
  */
-abstract class AbstractMockupCacheWorker extends ProductCentricBatchProcessingWorker
+abstract class AbstractMockupCacheWorker extends AbstractBatchProcessingWorker
 {
     /**
      * returns prefix for cache key

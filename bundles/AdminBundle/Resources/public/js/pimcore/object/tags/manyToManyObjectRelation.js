@@ -194,7 +194,7 @@ pimcore.object.tags.manyToManyObjectRelation = Class.create(pimcore.object.tags.
 
         if (!invalid) {
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_dataobject_dataobject_add'),
+                url: "/admin/object/add",
                 method: 'POST',
                 params: {
                     className: className,
@@ -883,7 +883,7 @@ pimcore.object.tags.manyToManyObjectRelation = Class.create(pimcore.object.tags.
         var newItem = this.store.add(item);
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_dataobject_dataobjecthelper_loadobjectdata'),
+            url: "/admin/object-helper/load-object-data",
             params: {
                 id: item.id,
                 'fields[]': fields

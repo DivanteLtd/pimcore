@@ -1,6 +1,9 @@
 <?php
 
-// constants generated in lib/Bootstrap.php
+// just to have a link to the real constants :)
+require_once '../config/constants.php';
+
+// constants generated in pimcore/config/constants.php
 define('PIMCORE_COMPOSER_PATH', '');
 define('PIMCORE_COMPOSER_FILE_PATH', '');
 define('PIMCORE_PATH', '');

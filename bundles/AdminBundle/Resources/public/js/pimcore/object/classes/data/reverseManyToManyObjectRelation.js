@@ -106,7 +106,7 @@ pimcore.object.classes.data.reverseManyToManyObjectRelation = Class.create(pimco
         this.fieldComboStore = new Ext.data.Store({
             proxy: {
                 type: 'ajax',
-                url: Routing.generate('pimcore_admin_dataobject_dataobjecthelper_gridgetcolumnconfig'),
+                url: '/admin/object-helper/grid-get-column-config',
                 reader: {
                     type: 'json',
                     rootProperty: "availableFields"

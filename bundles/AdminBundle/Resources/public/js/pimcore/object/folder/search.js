@@ -22,9 +22,7 @@ pimcore.object.search = Class.create(pimcore.object.helpers.gridTabAbstract, {
     onlyDirectChildren: false,
 
     sortinfo: {},
-    initialize: function ($super, object, searchType) {
-        $super();
-
+    initialize: function (object, searchType) {
         this.object = object;
         this.element = object;
         this.searchType = searchType;
@@ -131,7 +129,7 @@ pimcore.object.search = Class.create(pimcore.object.helpers.gridTabAbstract, {
 
     getTableDescription: function () {
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_dataobject_dataobjecthelper_gridgetcolumnconfig'),
+            url: "/admin/object-helper/grid-get-column-config",
             params: {
                 id: this.classId,
                 objectId:
@@ -222,7 +220,7 @@ pimcore.object.search = Class.create(pimcore.object.helpers.gridTabAbstract, {
         var gridHelper = new pimcore.object.helpers.grid(
             klass.data.text,
             fields,
-            Routing.generate('pimcore_admin_dataobject_dataobject_gridproxy', {classId: this.classId, folderId: this.object.id}),
+            "/admin/object/grid-proxy?classId=" + this.classId + "&folderId=" + this.object.id,
             baseParams,
             false
         );

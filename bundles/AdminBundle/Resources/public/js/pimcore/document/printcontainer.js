@@ -13,6 +13,8 @@
 
 pimcore.registerNS("pimcore.document.printcontainer");
 pimcore.document.printcontainer = Class.create(pimcore.document.printabstract, {
+
+    urlprefix: "/admin/",
     type: "printcontainer",
 
     init: function () {

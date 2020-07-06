@@ -77,21 +77,9 @@ pimcore.element.helpers.gridColumnConfig = {
     },
 
     deleteGridConfigConfirmed: function (btn) {
-        var route = null;
-
-        if (this.gridType === 'asset') {
-            route = 'pimcore_admin_asset_assethelper_griddeletecolumnconfig';
-        }
-        else if(this.gridType === 'object') {
-            route = 'pimcore_admin_dataobject_dataobjecthelper_griddeletecolumnconfig';
-        }
-        else {
-            throw new Error('Type unknown');
-        }
-
-        if (btn === 'ok') {
+        if (btn == 'ok') {
             Ext.Ajax.request({
-                url: Routing.generate(route),
+                url: "/admin/" + this.gridType + "-helper/grid-delete-column-config",
                 method: "DELETE",
                 params: {
                     id: this.classId,
@@ -387,17 +375,17 @@ pimcore.element.helpers.gridColumnConfig = {
             for (var i = 0; i < selectedRows.length; i++) {
                 jobs.push(selectedRows[i].get("id"));
             }
-            this.batchOpen(columnIndex, jobs, append, remove, onlySelected);
+            this.batchOpen(columnIndex, jobs, append, remove, true);
 
         } else {
-            let params = this.getGridParams(onlySelected);
+            let params = this.getGridParams();
             Ext.Ajax.request({
                 url: this.batchPrepareUrl,
                 params: params,
                 success: function (columnIndex, response) {
                     var rdata = Ext.decode(response.responseText);
                     if (rdata.success && rdata.jobs) {
-                        this.batchOpen(columnIndex, rdata.jobs, append, remove, onlySelected);
+                        this.batchOpen(columnIndex, rdata.jobs, append, remove, false);
                     }
 
                 }.bind(this, columnIndex)
@@ -426,7 +414,7 @@ pimcore.element.helpers.gridColumnConfig = {
         }
         // HACK END
 
-        if((this.objecttype === "object") || (this.objecttype === "variant")) {
+        if(this.objecttype == "object") {
             if (!fieldInfo.layout || !fieldInfo.layout.layout) {
                 return;
             }
@@ -655,7 +643,7 @@ pimcore.element.helpers.gridColumnConfig = {
                 }
                 Ext.Msg.alert(t("error"), t("error_jobs") + ": " + jobErrors.join(","));
             } else {
-                pimcore.helpers.download(exportType.getDownloadUrl(fileHandle));
+                pimcore.helpers.download(exportType.downloadUrl + "?fileHandle=" + fileHandle);
             }
 
             return;
@@ -704,7 +692,7 @@ pimcore.element.helpers.gridColumnConfig = {
         this.buildColumnConfigMenu();
     },
 
-    getGridParams: function (onlySelected) {
+    getGridParams: function () {
         var filters = "";
         var condition = "";
         var searchQuery = this.searchField ? this.searchField.getValue() : "";
@@ -732,17 +720,15 @@ pimcore.element.helpers.gridColumnConfig = {
             params["query"] = searchQuery;
         }
 
-        if (onlySelected !== false) {
-            //create the ids array which contains chosen rows to export
-            ids = [];
-            var selectedRows = this.grid.getSelectionModel().getSelection();
-            for (var i = 0; i < selectedRows.length; i++) {
-                ids.push(selectedRows[i].data.id);
-            }
+        //create the ids array which contains chosen rows to export
+        ids = [];
+        var selectedRows = this.grid.getSelectionModel().getSelection();
+        for (var i = 0; i < selectedRows.length; i++) {
+            ids.push(selectedRows[i].data.id);
+        }
 
-            if (ids.length > 0) {
-                params["ids[]"] = ids;
-            }
+        if (ids.length > 0) {
+            params["ids[]"] = ids;
         }
 
         //tags filter

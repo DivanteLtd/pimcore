@@ -42,7 +42,7 @@ pimcore.report.custom.definition.analytics = Class.create({
             autoDestroy: true,
             proxy: {
                 type: 'ajax',
-                url: Routing.generate('pimcore_admin_reports_analytics_getdimensions'),
+                url: "/admin/reports/analytics/get-dimensions",
                 reader: {
                     type: 'json',
                     rootProperty: "data",
@@ -87,7 +87,7 @@ pimcore.report.custom.definition.analytics = Class.create({
             autoDestroy: true,
             proxy: {
                 type: 'ajax',
-                url: Routing.generate('pimcore_admin_reports_analytics_getmetrics'),
+                url: "/admin/reports/analytics/get-metrics",
                 reader: {
                     type: 'json',
                     rootProperty: "data",
@@ -134,7 +134,7 @@ pimcore.report.custom.definition.analytics = Class.create({
             autoLoad: true,
             proxy: {
                 type: 'ajax',
-                url: Routing.generate('pimcore_admin_reports_analytics_getsegments'),
+                url: "/admin/reports/analytics/get-segments",
                 reader: {
                     rootProperty: "data",
                     idProperty: "id"
@@ -206,7 +206,7 @@ pimcore.report.custom.definition.analytics = Class.create({
                         autoLoad: true,
                         proxy: {
                             type: 'ajax',
-                            url: Routing.generate('pimcore_admin_reports_analytics_getprofiles'),
+                            url: "/admin/reports/analytics/get-profiles",
                             reader: {
                                 type: 'json',
                                 rootProperty: "data",

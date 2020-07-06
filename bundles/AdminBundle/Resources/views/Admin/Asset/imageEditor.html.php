@@ -1,6 +1,3 @@
-<?php
-/** @var \Pimcore\Templating\PhpEngine $view */
-?>
 <!DOCTYPE html>
 <html dir="ltr" lang="en-US">
 <head>
@@ -73,12 +70,9 @@
 
 <?php
     $imageFileExtension = \Pimcore\File::getFileExtension($this->asset->getFilename());
-    $imageUrl = $view->router()->path('pimcore_admin_asset_getasset', ['id' => $this->asset->getId()]);
+    $imageUrl = $this->asset->getFullPath();
     if(!in_array($imageFileExtension, ['png', 'jpg', 'jpeg'])) {
-        $imageUrl = $view->router()->path('pimcore_admin_asset_getimagethumbnail', [
-            'id' => $this->asset->getId(),
-            'format' => 'png'
-        ]);
+        $imageUrl = '/admin/asset/get-image-thumbnail?id=' . $this->asset->getId() . '&format=png';
     }
 
 ?>
@@ -108,7 +102,7 @@
             var dataUri = tempCanvas.toDataURL('image/<?= ($imageFileExtension == "png") ? "png" : "jpeg" ?>');
 
             parent.Ext.Ajax.request({
-                url: "<?=$view->router()->path('pimcore_admin_asset_imageeditorsave', ['id' => $this->asset->getId()])?>",
+                url: "/admin/asset/image-editor-save?id=<?= $this->asset->getId() ?>",
                 method: 'PUT',
                 params: {
                     dataUri: dataUri

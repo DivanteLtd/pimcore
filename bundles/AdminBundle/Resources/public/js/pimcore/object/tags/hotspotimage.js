@@ -62,29 +62,24 @@ pimcore.object.tags.hotspotimage = Class.create(pimcore.object.tags.image, {
                 }
 
                 if (value && value.id) {
-                    var params = {
-                        id: value.id
-                    };
-
+                    var baseUrl = '<img src="/admin/asset/get-image-thumbnail?id=' + value.id;
                     if (forGridConfigPreview) {
-                        params['width'] = 88;
-                        params['height'] = 20;
-                        params['frame'] = true;
-
-                        return '<img src="' + Routing.generate('pimcore_admin_asset_getimagethumbnail', params)  + '" />';
+                        return baseUrl + '&width=88&height=20&frame=true" />';
                     } else {
-                        params['width'] = 88;
-                        params['height'] = 88;
-                        params['frame'] = true;
+                        var params = {
+                            width: 88,
+                            height: 88,
+                            frame: true
+                        };
 
-                        var url = Routing.generate('pimcore_admin_asset_getimagethumbnail', params);
+                        var url = Ext.String.urlAppend(baseUrl, Ext.Object.toQueryString(params));
 
                         if (value.crop) {
                             var cropParams = Ext.Object.toQueryString(value.crop);
                             url = Ext.String.urlAppend(url, cropParams);
                         }
 
-                        url = '<img src="' + url + '" style="width:88px; height:88px;" />';
+                        url = url + '" style="width:88px; height:88px;" />';
                         return url;
                     }
                 }
@@ -240,8 +235,8 @@ pimcore.object.tags.hotspotimage = Class.create(pimcore.object.tags.image, {
             tbar: toolbar
         };
 
-        if (!this.additionalConfig.gallery) {
-             conf.style = "padding-bottom: 10px;";
+        if (!this.additionalConfig.condensed) {
+            // conf.style = "padding-bottom: 10px;";
         }
 
         this.component = new Ext.Panel(conf);
@@ -324,12 +319,9 @@ pimcore.object.tags.hotspotimage = Class.create(pimcore.object.tags.image, {
                 height = body.getHeight() - 10;
             }
 
-            var path = Routing.generate('pimcore_admin_asset_getimagethumbnail', Ext.merge({
-                id: this.data.id,
-                width: width,
-                height: height,
-                contain: true
-            }, this.crop));
+            var path = "/admin/asset/get-image-thumbnail?id=" + this.data.id + "&width=" + width
+                + "&height=" + height + "&contain=true" + "&" + Ext.urlEncode(this.crop);
+
 
             body.setStyle({
                 backgroundImage: "url(" + path + ")",

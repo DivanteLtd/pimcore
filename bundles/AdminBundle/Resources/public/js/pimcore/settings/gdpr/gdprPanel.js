@@ -101,7 +101,7 @@ pimcore.settings.gdpr.gdprPanel = Class.create({
         var searchParams = this.formPanel.getForm().getFieldValues();
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_gdpr_admin_getdataproviders'),
+            url: "/admin/gdpr/get-data-providers",
             success: function (response) {
 
                 this.tabPanel.removeAll();

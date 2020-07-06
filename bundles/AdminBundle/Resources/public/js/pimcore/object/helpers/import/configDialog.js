@@ -39,7 +39,7 @@ pimcore.object.helpers.import.configDialog = Class.create({
 
     showUpload: function () {
 
-        pimcore.helpers.uploadDialog(Routing.generate('pimcore_admin_dataobject_dataobjecthelper_importupload', {importId: this.uniqueImportId}), "Filedata", function (res) {
+        pimcore.helpers.uploadDialog('/admin/object-helper/import-upload?importId=' + this.uniqueImportId, "Filedata", function (res) {
             this.getFileInfo(false, null);
         }.bind(this), function () {
             Ext.MessageBox.alert(t("error"), t("error"));
@@ -132,7 +132,7 @@ pimcore.object.helpers.import.configDialog = Class.create({
                 pimcore.helpers.download(this.getExportConfigUrl());
             }.bind(this)
         });
-
+        
         this.loadButton = new Ext.button.Split({
 
                 text: t("load"),
@@ -213,7 +213,7 @@ pimcore.object.helpers.import.configDialog = Class.create({
 
     getFileInfo: function (isReload, importConfigId, dialect) {
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_dataobject_dataobjecthelper_importgetfileinfo'),
+            url: "/admin/object-helper/import-get-file-info",
             params: {
                 importConfigId: importConfigId,
                 importId: this.uniqueImportId,
@@ -255,12 +255,9 @@ pimcore.object.helpers.import.configDialog = Class.create({
             } else {
                 this.showWindow(data);
             }
-        } else {
-            if (data.message) {
-                Ext.MessageBox.alert(t('error'), t('unsupported_filetype') + ':<br>' + data.message);
-            } else {
-                Ext.MessageBox.alert(t('error'), t('unsupported_filetype'));
-            }
+        }
+        else {
+            Ext.MessageBox.alert(t("error"), t("unsupported_filetype"));
         }
     },
 
@@ -302,7 +299,7 @@ pimcore.object.helpers.import.configDialog = Class.create({
             };
 
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_dataobject_dataobjecthelper_importsaveconfig'),
+                url: '/admin/object-helper/import-save-config',
                 method: "post",
                 params: data,
                 success: function (response) {
@@ -369,7 +366,7 @@ pimcore.object.helpers.import.configDialog = Class.create({
         };
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_dataobject_dataobjecthelper_prepareimportpreview'),
+            url: '/admin/object-helper/prepare-import-preview',
             method: "post",
             params: {
                 data: Ext.encode(data)
@@ -412,7 +409,7 @@ pimcore.object.helpers.import.configDialog = Class.create({
 
         this.versionPreviewWindow.show();
 
-        var path = Routing.generate('pimcore_admin_dataobject_dataobjecthelper_importpreview', {importId: this.uniqueImportId});
+        var path = "/admin/object-helper/import-preview?importId=" + this.uniqueImportId;
         Ext.get(frameId).dom.src = path;
     },
 
@@ -553,7 +550,7 @@ pimcore.object.helpers.import.configDialog = Class.create({
     deleteImportConfigConfirmed: function (btn) {
         if (btn == 'ok') {
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_dataobject_dataobjecthelper_deleteimportconfig'),
+                url: "/admin/object-helper/delete-import-config",
                 method: "DELETE",
                 params: {
                     importConfigId: this.importConfigId
@@ -580,7 +577,7 @@ pimcore.object.helpers.import.configDialog = Class.create({
     importConfig: function () {
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_dataobject_dataobjecthelper_getexportconfigs'),
+            url: "/admin/object-helper/get-export-configs",
             params: {
                 classId: this.classId
             },
@@ -602,7 +599,7 @@ pimcore.object.helpers.import.configDialog = Class.create({
     doImportConfig: function (gridConfigId) {
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_dataobject_dataobjecthelper_importexportconfig'),
+            url: "/admin/object-helper/import-export-config",
             method: 'POST',
             params: {
                 gridConfigId: gridConfigId,
@@ -753,7 +750,7 @@ pimcore.object.helpers.import.configDialog = Class.create({
         this.jobRequest.importJobTotal = this.importJobTotal;
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_dataobject_dataobjecthelper_importprocess'),
+            url: "/admin/object-helper/import-process",
             params: this.jobRequest,
             method: "post",
             success: function (response) {
@@ -799,15 +796,15 @@ pimcore.object.helpers.import.configDialog = Class.create({
             }.bind(this)
         });
     },
-
+    
     getExportConfigUrl: function(){
         this.commitEverything();
         var config = this.prepareSaveData();
         config = Ext.encode(config);
-
+        
         return "/admin/object-helper/export-csv-import-config-as-json?classId="+this.classId+"&config="+config;
     },
-
+    
     getImportConfigUrl: function(){
         return '/admin/object-helper/import-csv-import-config-from-json?importId=' + this.uniqueImportId + "&importConfigId="+this.importConfigId + "&classId=" + this.classId;
     }

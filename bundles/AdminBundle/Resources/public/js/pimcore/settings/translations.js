@@ -13,14 +13,10 @@
 
 pimcore.registerNS("pimcore.settings.translations");
 pimcore.settings.translations = Class.create({
+
+
     filterField: null,
     preconfiguredFilter: "",
-    dataUrl: '',
-    exportUrl: '',
-    uploadImportUrl: '',
-    importUrl: '',
-    mergeUrl: '',
-    cleanupUrl: '',
 
     initialize: function (filter) {
 
@@ -246,8 +242,7 @@ pimcore.settings.translations = Class.create({
             columns: {
                 items: typesColumns,
                 defaults: {
-                    flex: 1,
-                    renderer: Ext.util.Format.htmlEncode
+                    flex: 1
                 }
             },
             trackMouseOver: true,

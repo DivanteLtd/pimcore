@@ -89,4 +89,5 @@ pimcore.object.classificationstore.columnConfigDialog = Class.create({
             this.node.remove();
         }
     }
+
 });

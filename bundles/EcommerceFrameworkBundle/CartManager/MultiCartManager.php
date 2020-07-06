@@ -97,8 +97,10 @@ class MultiCartManager implements CartManagerInterface
 
     protected function initSavedCarts()
     {
+        $classname = $this->getCartClassName();
+
         /* @var CartInterface[] $carts */
-        $carts = $this->getAllCartsForCurrentUser();
+        $carts = $classname::getAllCartsForUser($this->environment->getCurrentUserId());
 
         if (empty($carts)) {
             $this->carts = [];
@@ -110,13 +112,13 @@ class MultiCartManager implements CartManagerInterface
                     $this->carts[$cart->getId()] = $cart;
 
                     if ($cart instanceof AbstractCart) {
-                        $cart->setCurrentReadonlyMode($this->cartFactory->getCartReadOnlyMode());
+                        $cart->setCurrentReadOnlyMode($this->cartFactory->getCartReadOnlyMode());
                     }
                 } else {
                     // cart is already committed - cleanup cart and environment
                     $this->logger->warning('Deleting cart with id {cartId} because linked order {orderId} is already committed.', [
                         'cartId' => $cart->getId(),
-                        'orderId' => $order->getId(),
+                        'orderId' => $order->getId()
                     ]);
 
                     $cart->delete();
@@ -126,16 +128,6 @@ class MultiCartManager implements CartManagerInterface
                 }
             }
         }
-    }
-
-    /**
-     * @return CartInterface[]|null
-     */
-    protected function getAllCartsForCurrentUser()
-    {
-        $classname = $this->getCartClassName();
-
-        return $classname::getAllCartsForUser($this->environment->getCurrentUserId());
     }
 
     /**
@@ -296,7 +288,7 @@ class MultiCartManager implements CartManagerInterface
 
         if (empty($cart)) {
             $cartKey = $this->createCart([
-                'name' => $name,
+                'name' => $name
             ]);
             $cart = $this->getCart($cartKey);
         }

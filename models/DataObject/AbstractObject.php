@@ -1478,5 +1478,3 @@ class AbstractObject extends Model\Element\AbstractElement
         $this->o_dependencies = null;
     }
 }
-
-class_alias(AbstractObject::class, 'Pimcore\\Model\\DataObject');

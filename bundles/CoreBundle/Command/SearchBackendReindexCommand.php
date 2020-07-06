@@ -16,7 +16,6 @@ namespace Pimcore\Bundle\CoreBundle\Command;
 
 use Pimcore\Console\AbstractCommand;
 use Pimcore\Logger;
-use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\AbstractObject;
 use Pimcore\Model\Element\Service;
 use Pimcore\Model\Search;
@@ -57,7 +56,7 @@ class SearchBackendReindexCommand extends AbstractCommand
                 $list->setObjectTypes([
                     AbstractObject::OBJECT_TYPE_OBJECT,
                     AbstractObject::OBJECT_TYPE_FOLDER,
-                    AbstractObject::OBJECT_TYPE_VARIANT,
+                    AbstractObject::OBJECT_TYPE_VARIANT
                 ]);
             }
 
@@ -72,11 +71,6 @@ class SearchBackendReindexCommand extends AbstractCommand
                 $elements = $list->load();
                 foreach ($elements as $element) {
                     try {
-                        //process page count, if not exists
-                        if ($element instanceof Asset\Document && $element->getCustomSetting('document_page_count')) {
-                            $element->processPageCount();
-                        }
-
                         $searchEntry = Search\Backend\Data::getForElement($element);
                         if ($searchEntry instanceof Search\Backend\Data and $searchEntry->getId() instanceof Search\Backend\Data\Id) {
                             $searchEntry->setDataFromElement($element);

@@ -30,6 +30,7 @@ use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Element\Service;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 class ElementControllerBase extends AdminController
 {
@@ -44,6 +45,8 @@ class ElementControllerBase extends AdminController
     }
 
     /**
+     * @Route("/tree-get-root", methods={"GET"})
+     *
      * @param Request $request
      *
      * @return JsonResponse
@@ -70,6 +73,8 @@ class ElementControllerBase extends AdminController
     }
 
     /**
+     * @Route("/delete-info", methods={"GET"})
+     *
      * @param Request $request
      *
      * @return JsonResponse
@@ -142,12 +147,12 @@ class ElementControllerBase extends AdminController
                 ];
 
                 $deleteJobs[] = [[
-                    'url' => $this->generateUrl('pimcore_admin_recyclebin_add'),
+                    'url' => '/admin/recyclebin/add',
                     'method' => 'POST',
                     'params' => [
                         'type' => $type,
-                        'id' => $element->getId(),
-                    ],
+                        'id' => $element->getId()
+                    ]
                 ]];
 
                 $hasChilds = $element->hasChildren();
@@ -168,14 +173,14 @@ class ElementControllerBase extends AdminController
                         $deleteObjectsPerRequest = 5;
                         for ($i = 0; $i < ceil($childs / $deleteObjectsPerRequest); $i++) {
                             $deleteJobs[] = [[
-                                'url' => $this->get('router')->getContext()->getBaseUrl() . '/admin/' . $type . '/delete',
+                                'url' => '/admin/' . $type . '/delete',
                                 'method' => 'DELETE',
                                 'params' => [
                                     'step' => $i,
                                     'amount' => $deleteObjectsPerRequest,
                                     'type' => 'childs',
-                                    'id' => $element->getId(),
-                                ],
+                                    'id' => $element->getId()
+                                ]
                             ]];
                         }
                     }
@@ -183,11 +188,11 @@ class ElementControllerBase extends AdminController
 
                 // the asset itself is the last one
                 $deleteJobs[] = [[
-                    'url' => $this->get('router')->getContext()->getBaseUrl() . '/admin/' . $type . '/delete',
+                    'url' => '/admin/' . $type . '/delete',
                     'method' => 'DELETE',
                     'params' => [
-                        'id' => $element->getId(),
-                    ],
+                        'id' => $element->getId()
+                    ]
                 ]];
             }
         }
@@ -209,7 +214,7 @@ class ElementControllerBase extends AdminController
             'batchDelete' => count($ids) > 1,
             'elementKey' => $elementKey,
             'errors' => $errors,
-            'itemResults' => $itemResults,
+            'itemResults' => $itemResults
         ]);
     }
 }

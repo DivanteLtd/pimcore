@@ -33,12 +33,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class NotificationController extends AdminController
 {
     /**
-     * @Route("/recipients", name="pimcore_admin_notification_recipients", methods={"GET"})
-     *
      * @param UserService $service
      * @param Translator $translator
      *
      * @return JsonResponse
+     * @Route("/recipients", methods={"GET"})
      */
     public function recipientsAction(UserService $service, Translator $translator): JsonResponse
     {
@@ -52,7 +51,7 @@ class NotificationController extends AdminController
 
             $data[] = [
                 'id' => $recipient->getId(),
-                'text' => $prefix . $recipient->getName(),
+                'text' => $prefix . $recipient->getName()
             ];
         }
 
@@ -60,12 +59,11 @@ class NotificationController extends AdminController
     }
 
     /**
-     * @Route("/send", name="pimcore_admin_notification_send", methods={"POST"})
-     *
      * @param Request $request
      * @param NotificationService $service
      *
      * @return JsonResponse
+     * @Route("/send", methods={"POST"})
      */
     public function sendAction(Request $request, NotificationService $service): JsonResponse
     {
@@ -90,12 +88,11 @@ class NotificationController extends AdminController
     }
 
     /**
-     * @Route("/find", name="pimcore_admin_notification_find")
-     *
      * @param Request $request
      * @param NotificationService $service
      *
      * @return JsonResponse
+     * @Route("/find")
      */
     public function findAction(Request $request, NotificationService $service): JsonResponse
     {
@@ -112,12 +109,11 @@ class NotificationController extends AdminController
     }
 
     /**
-     * @Route("/find-all", name="pimcore_admin_notification_findall")
-     *
      * @param Request $request
      * @param NotificationService $service
      *
      * @return JsonResponse
+     * @Route("/find-all")
      */
     public function findAllAction(Request $request, NotificationService $service): JsonResponse
     {
@@ -132,7 +128,7 @@ class NotificationController extends AdminController
 
         $options = [
             'offset' => $request->get('start', 0),
-            'limit' => $request->get('limit', 40),
+            'limit' => $request->get('limit', 40)
         ];
 
         $result = $service->findAll($filter, $options);
@@ -151,12 +147,11 @@ class NotificationController extends AdminController
     }
 
     /**
-     * @Route("/find-last-unread", name="pimcore_admin_notification_findlastunread")
-     *
      * @param Request $request
      * @param NotificationService $service
      *
      * @return JsonResponse
+     * @Route("/find-last-unread")
      */
     public function findLastUnreadAction(Request $request, NotificationService $service): JsonResponse
     {
@@ -182,12 +177,11 @@ class NotificationController extends AdminController
     }
 
     /**
-     * @Route("/mark-as-read", name="pimcore_admin_notification_markasread")
-     *
      * @param Request $request
      * @param NotificationService $service
      *
      * @return JsonResponse
+     * @Route("/mark-as-read")
      */
     public function markAsReadAction(Request $request, NotificationService $service): JsonResponse
     {
@@ -200,12 +194,11 @@ class NotificationController extends AdminController
     }
 
     /**
-     * @Route("/delete", name="pimcore_admin_notification_delete")
-     *
      * @param Request $request
      * @param NotificationService $service
      *
      * @return JsonResponse
+     * @Route("/delete")
      */
     public function deleteAction(Request $request, NotificationService $service): JsonResponse
     {
@@ -218,12 +211,11 @@ class NotificationController extends AdminController
     }
 
     /**
-     * @Route("/delete-all", name="pimcore_admin_notification_deleteall")
-     *
      * @param Request $request
      * @param NotificationService $service
      *
      * @return JsonResponse
+     * @Route("/delete-all")
      */
     public function deleteAllAction(Request $request, NotificationService $service): JsonResponse
     {

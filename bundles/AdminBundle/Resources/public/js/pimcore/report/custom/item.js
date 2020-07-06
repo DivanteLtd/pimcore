@@ -420,7 +420,7 @@ pimcore.report.custom.item = Class.create({
                 autoLoad: true,
                 proxy: {
                     type: 'ajax',
-                    url: Routing.generate('pimcore_admin_user_getusersforsharing'),
+                    url: '/admin/user/get-users-for-sharing',
                     extraParams: {
                         include_current_user: true,
                         permission: 'reports'
@@ -456,7 +456,7 @@ pimcore.report.custom.item = Class.create({
                 autoLoad: true,
                 proxy: {
                     type: 'ajax',
-                    url: Routing.generate('pimcore_admin_user_getrolesforsharing'),
+                    url: '/admin/user/get-roles-for-sharing',
                     extraParams: {
                         permission: 'reports'
                     },
@@ -775,7 +775,7 @@ pimcore.report.custom.item = Class.create({
     getColumnSettings: function () {
         var m = this.getValues();
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_reports_customreport_columnconfig'),
+            url: "/admin/reports/custom-report/column-config",
             method: "post",
             params: {
                 configuration: Ext.encode(m.dataSourceConfig),
@@ -889,7 +889,7 @@ pimcore.report.custom.item = Class.create({
         var m = this.getValues();
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_reports_customreport_update'),
+            url: "/admin/reports/custom-report/update",
             method: "PUT",
             params: {
                 configuration: Ext.encode(m),

@@ -85,9 +85,5 @@ pimcore.asset.metadata.tags.input = Class.create(pimcore.asset.metadata.tags.abs
 
     getName: function () {
         return this.fieldConfig.name;
-    },
-
-    getGridCellEditor: function (gridtype, record) {
-        return Ext.create('Ext.form.TextField');
     }
 });

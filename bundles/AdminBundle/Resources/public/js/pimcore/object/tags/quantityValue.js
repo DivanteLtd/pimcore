@@ -44,7 +44,7 @@ pimcore.object.tags.quantityValue = Class.create(pimcore.object.tags.abstract, {
             fields: ['id', 'abbreviation']
         });
 
-        pimcore.helpers.quantityValue.initUnitStore(this.setData.bind(this), this.fieldConfig.validUnits, this.data);
+        pimcore.helpers.quantityValue.initUnitStore(this.setData.bind(this), this.fieldConfig.validUnits);
     },
 
     setData: function(data) {
@@ -84,7 +84,7 @@ pimcore.object.tags.quantityValue = Class.create(pimcore.object.tags.abstract, {
             }
 
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_dataobject_quantityvalue_convertall'),
+                url: "/admin/quantity-value/convert-all",
                 params: {
                     value: this.inputField.value,
                     unit: this.unitField.value,
@@ -105,10 +105,6 @@ pimcore.object.tags.quantityValue = Class.create(pimcore.object.tags.abstract, {
                 }
             });
         }.bind(this);
-
-        if (typeof this.store === "undefined") {
-            this.finishSetup();
-        }
 
         this.store.on('datachanged', function() {
             updateCompatibleUnitsToolTipContent();
@@ -166,7 +162,7 @@ pimcore.object.tags.quantityValue = Class.create(pimcore.object.tags.abstract, {
                 change: function( combo, newValue, oldValue) {
                     if(this.fieldConfig.autoConvert && (oldValue !== '' || oldValue !== null) && (newValue !== '' && newValue !== null)) {
                         Ext.Ajax.request({
-                            url: Routing.generate('pimcore_admin_dataobject_quantityvalue_convert'),
+                            url: "/admin/quantity-value/convert",
                             params: {
                                 value: this.inputField.value,
                                 fromUnit: oldValue,

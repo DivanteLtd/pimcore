@@ -606,7 +606,7 @@ class Mail extends \Swift_Message
         }
 
         $event = new MailEvent($this, [
-            'mailer' => $mailer,
+            'mailer' => $mailer
         ]);
 
         \Pimcore::getEventDispatcher()->dispatch(MailEvents::PRE_SEND, $event);
@@ -618,11 +618,7 @@ class Mail extends \Swift_Message
                 $mailer->send($this, $failedRecipients);
             } catch (\Exception $e) {
                 $mailer->getTransport()->stop();
-                if (isset($failedRecipients[0])) {
-                    throw new \Exception($failedRecipients[0].' - '.$e->getMessage());
-                } else {
-                    throw new \Exception($e->getMessage());
-                }
+                throw new \Exception($failedRecipients[0].' - '.$e->getMessage());
             }
         }
 

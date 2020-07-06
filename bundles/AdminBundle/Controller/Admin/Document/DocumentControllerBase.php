@@ -30,6 +30,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\Routing\Annotation\Route;
 
 abstract class DocumentControllerBase extends AdminController implements EventedControllerInterface
 {
@@ -44,14 +45,14 @@ abstract class DocumentControllerBase extends AdminController implements Evented
 
         $data['php'] = [
             'classes' => array_merge([get_class($document)], array_values(class_parents($document))),
-            'interfaces' => array_values(class_implements($document)),
+            'interfaces' => array_values(class_implements($document))
         ];
 
         $this->addAdminStyle($document, ElementAdminStyleEvent::CONTEXT_EDITOR, $data);
 
         $event = new GenericEvent($this, [
             'data' => $data,
-            'document' => $document,
+            'document' => $document
         ]);
         \Pimcore::getEventDispatcher()->dispatch(AdminEvents::DOCUMENT_GET_PRE_SEND_DATA, $event);
         $data = $event->getArgument('data');
@@ -160,6 +161,8 @@ abstract class DocumentControllerBase extends AdminController implements Evented
     }
 
     /**
+     * @Route("/save-to-session", methods={"POST"})
+     *
      * @param Request $request
      *
      * @return JsonResponse
@@ -221,6 +224,8 @@ abstract class DocumentControllerBase extends AdminController implements Evented
     }
 
     /**
+     * @Route("/remove-from-session", methods={"DELETE"})
+     *
      * @param Request $request
      *
      * @return JsonResponse
@@ -268,6 +273,7 @@ abstract class DocumentControllerBase extends AdminController implements Evented
         if ($latestVersion) {
             $latestDoc = $latestVersion->loadData();
             if ($latestDoc instanceof Model\Document\PageSnippet) {
+                $latestDoc->setModificationDate($document->getModificationDate()); // set de modification-date from published version to compare it in js-frontend
                 return $latestDoc;
             }
         }
@@ -277,6 +283,8 @@ abstract class DocumentControllerBase extends AdminController implements Evented
 
     /**
      * This is used for pages and snippets to change the master document (which is not saved with the normal save button)
+     *
+     * @Route("/change-master-document", methods={"PUT"})
      *
      * @param Request $request
      *

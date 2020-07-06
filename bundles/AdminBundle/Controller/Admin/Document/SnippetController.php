@@ -30,37 +30,7 @@ class SnippetController extends DocumentControllerBase
     use ElementEditLockHelperTrait;
 
     /**
-     * @Route("/save-to-session", name="pimcore_admin_document_snippet_savetosession", methods={"POST"})
-     *
-     * {@inheritDoc}
-     */
-    public function saveToSessionAction(Request $request)
-    {
-        return parent::saveToSessionAction($request);
-    }
-
-    /**
-     * @Route("/remove-from-session", name="pimcore_admin_document_snippet_removefromsession", methods={"DELETE"})
-     *
-     * {@inheritDoc}
-     */
-    public function removeFromSessionAction(Request $request)
-    {
-        return parent::removeFromSessionAction($request);
-    }
-
-    /**
-     * @Route("/change-master-document", name="pimcore_admin_document_snippet_changemasterdocument", methods={"PUT"})
-     *
-     * {@inheritDoc}
-     */
-    public function changeMasterDocumentAction(Request $request)
-    {
-        return parent::changeMasterDocumentAction($request);
-    }
-
-    /**
-     * @Route("/get-data-by-id", name="pimcore_admin_document_snippet_getdatabyid", methods={"GET"})
+     * @Route("/get-data-by-id", methods={"GET"})
      *
      * @param Request $request
      *
@@ -114,7 +84,7 @@ class SnippetController extends DocumentControllerBase
     }
 
     /**
-     * @Route("/save", name="pimcore_admin_document_snippet_save", methods={"POST","PUT"})
+     * @Route("/save", methods={"POST","PUT"})
      *
      * @param Request $request
      *
@@ -160,9 +130,9 @@ class SnippetController extends DocumentControllerBase
                 'success' => true,
                 'data' => [
                     'versionDate' => $snippet->getModificationDate(),
-                    'versionCount' => $snippet->getVersionCount(),
+                    'versionCount' => $snippet->getVersionCount()
                 ],
-                'treeData' => $treeData,
+                'treeData' => $treeData
             ]);
         } elseif ($snippet->isAllowed('save')) {
             $this->setValuesToDocument($request, $snippet);

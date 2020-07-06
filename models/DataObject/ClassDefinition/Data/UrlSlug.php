@@ -25,6 +25,8 @@ use Pimcore\Model\Redirect;
 
 class UrlSlug extends Data implements CustomResourcePersistingInterface, LazyLoadingSupportInterface
 {
+    use Model\DataObject\Traits\DefaultValueTrait;
+
     use Extension\ColumnType;
 
     use Model\DataObject\Traits\ContextPersistenceTrait;
@@ -85,7 +87,7 @@ class UrlSlug extends Data implements CustomResourcePersistingInterface, LazyLoa
      * @see Data::getDataForEditmode
      *
      * @param mixed $data
-     * @param null|Model\DataObject\Concrete $object
+     * @param null|Model\DataObject\AbstractObject $object
      * @param mixed $params
      *
      * @return array
@@ -105,7 +107,7 @@ class UrlSlug extends Data implements CustomResourcePersistingInterface, LazyLoa
                     $resultItem = [
                         'slug' => $slug->getSlug(),
                         'siteId' => $slug->getSiteId(),
-                        'domain' => $site ? $site->getMainDomain() : null,
+                        'domain' => $site ? $site->getMainDomain() : null
                     ];
 
                     $result[] = $resultItem;
@@ -121,7 +123,7 @@ class UrlSlug extends Data implements CustomResourcePersistingInterface, LazyLoa
      * @see Data::getDataFromEditmode
      *
      * @param string $data
-     * @param null|Model\DataObject\Concrete $object
+     * @param null|Model\DataObject\AbstractObject $object
      * @param mixed $params
      *
      * @return Model\DataObject\Data\UrlSlug[]
@@ -246,12 +248,20 @@ class UrlSlug extends Data implements CustomResourcePersistingInterface, LazyLoa
 
         $data = $this->getDataFromObjectParam($object, $params);
 
+        if (!is_array($data) || count($data) === 0) {
+            $container = $object instanceof Model\DataObject\Concrete ? $object : $object->getObject();
+            $data = $this->handleDefaultValue($data, $container, $params);
+            if ($data instanceof Model\DataObject\Data\UrlSlug) {
+                $data = [$data];
+            }
+        }
+
         $slugs = $this->prepareDataForPersistence($data, $object, $params);
         $db = Db::get();
 
         // delete rows first
         $deleteDescriptor = [
-            'fieldname' => $this->getName(),
+            'fieldname' => $this->getName()
         ];
         $this->enrichDataRow($object, $params, $classId, $deleteDescriptor, 'objectId');
         $conditionParts = Model\DataObject\Service::buildConditionPartsFromDescriptor($deleteDescriptor);
@@ -365,7 +375,7 @@ class UrlSlug extends Data implements CustomResourcePersistingInterface, LazyLoa
                         'classId' => $object->getClassId(),
                         'fieldname' => $this->getName(),
                         'slug' => $slugItem->getSlug(),
-                        'siteId' => $slugItem->getSiteId() ?? 0,
+                        'siteId' => $slugItem->getSiteId() ?? 0
                     ];
                 } else {
                     throw new \Exception('expected instance of UrlSlug');
@@ -495,16 +505,17 @@ class UrlSlug extends Data implements CustomResourcePersistingInterface, LazyLoa
     }
 
     /**
-     * @param Model\DataObject\Data\UrlSlug[]|null $data
+     * @param string $data
      *
      * @return bool
      */
     public function isEmpty($data)
     {
         if (is_array($data)) {
+            /** @var Model\DataObject\Data\UrlSlug $item */
             foreach ($data as $item) {
                 if ($item instanceof Model\DataObject\Data\UrlSlug) {
-                    if ($item->getSlug()) {
+                    if (!$item->getSlug() && !$item->getSiteId()) {
                         return false;
                     }
                 }
@@ -548,7 +559,7 @@ class UrlSlug extends Data implements CustomResourcePersistingInterface, LazyLoa
      * @deprecated
      *
      * @param mixed $value
-     * @param null|Model\DataObject\Concrete $object
+     * @param null|Model\DataObject\AbstractObject $object
      * @param mixed $params
      * @param Model\Webservice\IdMapperInterface|null $idMapper
      *
@@ -822,9 +833,14 @@ class UrlSlug extends Data implements CustomResourcePersistingInterface, LazyLoa
         return $result;
     }
 
-    /** @inheritDoc */
-    public function supportsInheritance()
+    /**
+     * @param \Pimcore\Model\DataObject\Concrete $object
+     * @param array $context
+     *
+     * @return null|string
+     */
+    protected function doGetDefaultValue($object, $context = [])
     {
-        return false;
+        return null;
     }
 }

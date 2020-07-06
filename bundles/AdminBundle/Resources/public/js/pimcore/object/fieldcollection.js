@@ -54,7 +54,7 @@ pimcore.object.fieldcollection = Class.create({
                 autoSync: true,
                 proxy: {
                     type: 'ajax',
-                    url: Routing.generate('pimcore_admin_dataobject_class_fieldcollectiontree'),
+                    url: '/admin/class/fieldcollection-tree',
                     reader: {
                         type: 'json'
                     },
@@ -143,7 +143,7 @@ pimcore.object.fieldcollection = Class.create({
         }
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_dataobject_class_fieldcollectionget'),
+            url: "/admin/class/fieldcollection-get",
             params: {
                 id: id
             },
@@ -157,7 +157,7 @@ pimcore.object.fieldcollection = Class.create({
 
         var fieldPanel = new pimcore.object.fieldcollections.field(data, this, this.openFieldcollection.bind(this, data.key), "pimcore_fieldcollection_editor_panel_");
         pimcore.layout.refresh();
-
+        
     },
 
     onTreeNodeContextmenu: function (tree, record, item, index, e, eOpts ) {
@@ -191,7 +191,7 @@ pimcore.object.fieldcollection = Class.create({
 
         if (button == "ok" && value.length > 2 && regresult == value && !in_array(value, forbiddennames)) {
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_dataobject_class_fieldcollectionupdate'),
+                url: "/admin/class/fieldcollection-update",
                 method: 'POST',
                 params: {
                     key: value,
@@ -224,7 +224,7 @@ pimcore.object.fieldcollection = Class.create({
         Ext.Msg.confirm(t('delete'), t('delete_message'), function(btn){
             if (btn == 'yes'){
                 Ext.Ajax.request({
-                    url: Routing.generate('pimcore_admin_dataobject_class_fieldcollectiondelete'),
+                    url: "/admin/class/fieldcollection-delete",
                     method: 'DELETE',
                     params: {
                         id: record.data.id

@@ -39,7 +39,6 @@ class Document extends Model\Asset
      */
     protected function update($params = [])
     {
-        parent::update($params);
         $this->clearThumbnails();
 
         if ($this->getDataChanged() && \Pimcore\Document::isAvailable()) {
@@ -51,6 +50,8 @@ class Document extends Model\Asset
                 TmpStore::add(sprintf('asset_document_conversion_%d', $this->getId()), $this->getId(), 'asset-document-conversion');
             }
         }
+
+        parent::update($params);
     }
 
     /**

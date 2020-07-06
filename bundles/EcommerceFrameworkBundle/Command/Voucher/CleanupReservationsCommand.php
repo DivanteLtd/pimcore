@@ -31,13 +31,11 @@ class CleanupReservationsCommand extends AbstractCommand
      * @param InputInterface $input
      * @param OutputInterface $output
      *
-     * @return int
+     * @throws \Pimcore\Bundle\EcommerceFrameworkBundle\Exception\InvalidConfigException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->output->writeln('<comment>*</comment> Cleaning up <info>reservations</info>');
         Factory::getInstance()->getVoucherService()->cleanUpReservations();
-
-        return 0;
     }
 }

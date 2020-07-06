@@ -15,6 +15,7 @@
 namespace Pimcore\Bundle\EcommerceFrameworkBundle\Command;
 
 use Pimcore\Bundle\EcommerceFrameworkBundle\CartManager\Cart;
+use Pimcore\Bundle\EcommerceFrameworkBundle\Exception\InvalidConfigException;
 use Pimcore\Bundle\EcommerceFrameworkBundle\Factory;
 use Pimcore\Console\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -32,13 +33,11 @@ class CleanupPendingOrdersCommand extends AbstractCommand
      * @param InputInterface $input
      * @param OutputInterface $output
      *
-     * @return int
+     * @throws InvalidConfigException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $checkoutManager = Factory::getInstance()->getCheckoutManager(new Cart());
         $checkoutManager->cleanUpPendingOrders();
-
-        return 0;
     }
 }

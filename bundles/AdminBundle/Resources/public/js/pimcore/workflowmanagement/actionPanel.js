@@ -26,7 +26,7 @@ pimcore.workflowmanagement.actionPanel = Class.create({
         this.elementEditor = elementEditor;
 
         this.initStores();
-
+ 
         //build the window and in turn this will create the form panels etc
         this.getActionWindow();
 
@@ -250,7 +250,7 @@ pimcore.workflowmanagement.actionPanel = Class.create({
 
         //send a request to the server with the current form data
         Ext.Ajax.request({
-            url : Routing.generate('pimcore_admin_workflow_getworkflowform'),
+            url : '/admin/workflow/get-workflow-form',
             method: 'post',
             params: this.getWorkflowFormPanel().getValues(),
             success: this.refreshWorkflowFormPanelItems.bind(this),
@@ -486,7 +486,7 @@ pimcore.workflowmanagement.actionPanel = Class.create({
 
         //send a request to the server with the current form data
         Ext.Ajax.request({
-            url : Routing.generate('pimcore_admin_workflow_submitworkflowtransition'),
+            url : '/admin/workflow/submit-workflow-transition',
             method: 'post',
             params: formvars,
             success: this.onSubmitWorkflowTransitionResponse.bind(this),
@@ -526,6 +526,6 @@ pimcore.workflowmanagement.actionPanel = Class.create({
     reloadObject: function() {
         this.elementEditor.reload();
     }
-
+    
 
 });

@@ -33,7 +33,7 @@ pimcore.layout.portlets.modifiedObjects = Class.create(pimcore.layout.portlets.a
             autoDestroy: true,
             proxy: {
                 type: 'ajax',
-                url: Routing.generate('pimcore_admin_portal_portletmodifiedobjects'),
+                url: '/admin/portal/portlet-modified-objects',
                 reader: {
                     type: 'json',
                     rootProperty: 'objects'

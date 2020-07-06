@@ -15,17 +15,10 @@ pimcore.registerNS("pimcore.asset.helpers.gridTabAbstract");
 pimcore.asset.helpers.gridTabAbstract = Class.create(pimcore.element.helpers.gridTabAbstract, {
 
     objecttype: 'asset',
-    batchPrepareUrl: null,
-    batchProcessUrl: null,
-    exportPrepareUrl: null,
-    exportProcessUrl: null,
-
-    initialize: function() {
-        this.batchPrepareUrl = Routing.generate('pimcore_admin_asset_assethelper_getbatchjobs');
-        this.batchProcessUrl = Routing.generate('pimcore_admin_asset_assethelper_batch');
-        this.exportPrepareUrl = Routing.generate('pimcore_admin_asset_assethelper_getexportjobs');
-        this.exportProcessUrl = Routing.generate('pimcore_admin_asset_assethelper_doexport');
-    },
+    batchPrepareUrl: "/admin/asset-helper/get-batch-jobs",
+    batchProcessUrl: "/admin/asset-helper/batch",
+    exportPrepareUrl: "/admin/asset-helper/get-export-jobs",
+    exportProcessUrl: "/admin/asset-helper/do-export",
 
     createGrid: function (columnConfig) {
     },
@@ -83,7 +76,7 @@ pimcore.asset.helpers.gridTabAbstract = Class.create(pimcore.element.helpers.gri
             }.bind(this),
             function () {
                 Ext.Ajax.request({
-                    url: Routing.generate('pimcore_admin_asset_assethelper_gridgetcolumnconfig'),
+                    url: "/admin/asset-helper/grid-get-column-config",
                     params: {
                         gridtype: "grid",
                         searchType: this.searchType

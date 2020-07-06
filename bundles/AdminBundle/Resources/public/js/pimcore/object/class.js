@@ -58,7 +58,7 @@ pimcore.object.klass = Class.create({
                 autoSync: true,
                 proxy: {
                     type: 'ajax',
-                    url: Routing.generate('pimcore_admin_dataobject_class_gettree'),
+                    url: '/admin/class/get-tree',
                     reader: {
                         type: 'json'
 
@@ -107,7 +107,7 @@ pimcore.object.klass = Class.create({
 
     suggestIdentifier: function() {
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_dataobject_class_suggestclassidentifier'),
+            url: "/admin/class/suggest-class-identifier",
             params: {
             },
             success: function (response) {
@@ -172,7 +172,7 @@ pimcore.object.klass = Class.create({
 
         if (id && id.length > 0) {
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_dataobject_class_get'),
+                url: "/admin/class/get",
                 params: {
                     id: id
                 },
@@ -300,7 +300,7 @@ pimcore.object.klass = Class.create({
         }
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_dataobject_class_add'),
+            url: "/admin/class/add",
             method: "POST",
             params: {
                 className: className,
@@ -330,7 +330,7 @@ pimcore.object.klass = Class.create({
         Ext.Msg.confirm(t('delete'), sprintf(t('delete_class_message'), record.data.text), function (btn) {
             if (btn == 'yes') {
                 Ext.Ajax.request({
-                    url: Routing.generate('pimcore_admin_dataobject_class_delete'),
+                    url: "/admin/class/delete",
                     method: 'DELETE',
                     params: {
                         id: record.data.id

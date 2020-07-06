@@ -191,7 +191,7 @@ class EncryptedField extends Data implements ResourcePersistenceAwareInterface
      * @see ResourcePersistenceAwareInterface::getDataFromResource
      *
      * @param string $data
-     * @param null|Model\DataObject\Concrete $object
+     * @param null|Model\DataObject\AbstractObject $object
      * @param mixed $params
      *
      * @return Model\DataObject\Data\EncryptedField|null
@@ -220,7 +220,7 @@ class EncryptedField extends Data implements ResourcePersistenceAwareInterface
      * @see Data::getDataForEditmode
      *
      * @param string $data
-     * @param null|Model\DataObject\Concrete $object
+     * @param null|Model\DataObject\AbstractObject $object
      * @param mixed $params
      *
      * @return string|null
@@ -242,7 +242,7 @@ class EncryptedField extends Data implements ResourcePersistenceAwareInterface
      * @see Data::getDataFromEditmode
      *
      * @param string $data
-     * @param null|Model\DataObject\Concrete $object
+     * @param null|Model\DataObject\AbstractObject $object
      * @param mixed $params
      *
      * @return Model\DataObject\Data\EncryptedField|null
@@ -304,7 +304,7 @@ class EncryptedField extends Data implements ResourcePersistenceAwareInterface
     }
 
     /**
-     * @param Model\DataObject\Data\EncryptedField|null $data
+     * @param Model\DataObject\Data\RgbaColor $data
      *
      * @return bool
      */
@@ -313,11 +313,10 @@ class EncryptedField extends Data implements ResourcePersistenceAwareInterface
         $fd = $this->getDelegateDatatypeDefinition();
         if ($fd) {
             $data = $data instanceof Model\DataObject\Data\EncryptedField ? $data->getPlain() : $data;
+            $result = $fd->isEmpty($data);
 
-            return $fd->isEmpty($data);
+            return $result;
         }
-
-        return true;
     }
 
     /**
@@ -325,7 +324,7 @@ class EncryptedField extends Data implements ResourcePersistenceAwareInterface
      *
      * @deprecated
      *
-     * @param Model\DataObject\Concrete $object
+     * @param Model\DataObject\AbstractObject $object
      * @param array $params
      *
      * @return string|null
@@ -405,7 +404,7 @@ class EncryptedField extends Data implements ResourcePersistenceAwareInterface
 
     /** Encode value for packing it into a single column.
      * @param mixed $value
-     * @param Model\DataObject\Concrete $object
+     * @param Model\DataObject\AbstractObject $object
      * @param mixed $params
      *
      * @return mixed
@@ -432,7 +431,7 @@ class EncryptedField extends Data implements ResourcePersistenceAwareInterface
 
     /** See marshal
      * @param mixed $value
-     * @param Model\DataObject\Concrete $object
+     * @param Model\DataObject\AbstractObject $object
      * @param mixed $params
      *
      * @return mixed
@@ -460,7 +459,7 @@ class EncryptedField extends Data implements ResourcePersistenceAwareInterface
      *
      * @abstract
      *
-     * @param Model\DataObject\Concrete $object
+     * @param Model\DataObject\AbstractObject $object
      * @param array $params
      *
      * @return string

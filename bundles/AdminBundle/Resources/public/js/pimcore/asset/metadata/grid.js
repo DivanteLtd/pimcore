@@ -21,6 +21,7 @@ pimcore.asset.metadata.grid = Class.create({
     getLayout: function () {
 
         if (this.grid == null) {
+
             if(this.asset.data.metadata.length < 1) {
                 // default fields
                 if(this.asset.data.type == "image") {
@@ -58,19 +59,19 @@ pimcore.asset.metadata.grid = Class.create({
                 }
             });
 
-            var supportedTypes = pimcore.helpers.getAssetMetadataDataTypes("custom");
-            var typeStore = [];
-
-            for (let i = 0; i < supportedTypes.length; i++) {
-                let type = supportedTypes[i];
-                typeStore.push([type, t(type)]);
-            }
-
             var customType = new Ext.form.ComboBox({
                 name: "type",
                 valueField: "id",
                 displayField:'name',
-                store: typeStore,
+                store: [
+                    ["input", t("input")],
+                    ["textarea", t("textarea")],
+                    ["document", t("document")],
+                    ["asset", t("asset")],
+                    ["object", t("object")],
+                    ["date", t("date")],
+                    ["checkbox", t("checkbox")]
+                ],
                 editable: false,
                 triggerAction: 'all',
                 mode: "local",
@@ -110,9 +111,9 @@ pimcore.asset.metadata.grid = Class.create({
                         }, "type", {
                             name: "data",
                             convert: function (v, r) {
-                                let dataType = r.data.type;
-                                if (typeof pimcore.asset.metadata.tags[dataType].prototype.convertPredefinedGridData === "function") {
-                                    v = pimcore.asset.metadata.tags[dataType].prototype.convertPredefinedGridData(v, r);
+                                if (r.data.type == "date" && v && !(v instanceof Date)) {
+                                    var d = new Date(intval(v) * 1000);
+                                    return d;
                                 }
                                 return v;
                             }
@@ -149,6 +150,7 @@ pimcore.asset.metadata.grid = Class.create({
                 }
             });
 
+
             this.grid = Ext.create('Ext.grid.Panel', {
                 title: t("custom_metadata"),
                 autoScroll: true,
@@ -175,7 +177,7 @@ pimcore.asset.metadata.grid = Class.create({
                 {
                     xtype: "button",
                     text: t('add_predefined_metadata_definitions'),
-                    handler: this.handleAddPredefinedDefinitions.bind(this),
+                    handler: this.addSetFromPredefinedDefined.bind(this),
                     iconCls: "pimcore_icon_add"
                 }
                 ],
@@ -237,18 +239,22 @@ pimcore.asset.metadata.grid = Class.create({
                             xtype: 'actioncolumn',
                             menuText: t('open'),
                             width: 40,
-                            items: [
-                                {
-                                    tooltip: t('open'),
-                                    icon: "/bundles/pimcoreadmin/img/flat-color-icons/open_file.svg",
-                                    handler: function (grid, rowIndex) {
-                                        let rec = grid.getStore().getAt(rowIndex);
-                                        pimcore.asset.metadata.tags[rec.get('type')].prototype.handleGridOpenAction(grid, rowIndex);
-                                    }.bind(this),
-                                    getClass: function (v, meta, rec) {
-                                        return pimcore.asset.metadata.tags[rec.get('type')].prototype.getGridOpenActionVisibilityStyle();
+                            items: [{
+                                tooltip: t('open'),
+                                icon: "/bundles/pimcoreadmin/img/flat-color-icons/open_file.svg",
+                                handler: function (grid, rowIndex) {
+                                    var pData = grid.getStore().getAt(rowIndex).data;
+                                    if (pData.data) {
+                                        pimcore.helpers.openElement(pData.data, pData.type);
+                                    }
+                                }.bind(this),
+                                getClass: function (v, meta, rec) {  // Or return a class from a function
+                                    if (rec.get('type') != "object" && rec.get('type') != "document"
+                                        && rec.get('type') != "asset") {
+                                        return "pimcore_hidden";
                                     }
                                 }
+                            }
                             ]
                         },
                         {
@@ -265,6 +271,7 @@ pimcore.asset.metadata.grid = Class.create({
                         }
                     ]
                 }
+
             });
 
             this.grid.getView().on("refresh", this.updateRows.bind(this, "view-refresh"));
@@ -276,30 +283,115 @@ pimcore.asset.metadata.grid = Class.create({
     updateRows: function (event) {
         var rows = Ext.get(this.grid.getEl().dom).query(".x-grid-row");
 
-        for (let i = 0; i < rows.length; i++) {
+        for (var i = 0; i < rows.length; i++) {
+
             try {
-                var data = this.grid.getStore().getAt(i).data;
+                var propertyName = Ext.get(rows[i]).query(".x-grid-cell-first div div")[0].getAttribute("name");
+                var storeIndex = this.grid.getStore().findExact("name", propertyName);
+
+                var data = this.grid.getStore().getAt(storeIndex).data;
 
                 if(in_array(data.name, this.disallowedKeys)) {
                     Ext.get(rows[i]).addCls("pimcore_properties_hidden_row");
                 }
 
-                pimcore.asset.metadata.tags[data.type].prototype.updatePredefinedGridRow(this.grid, rows[i], data);
-            } catch (e) {
+                if (data.type == "document" || data.type == "asset" || data.type == "object") {
+
+                    // add dnd support
+                    var dd = new Ext.dd.DropZone(rows[i], {
+                        ddGroup: "element",
+
+                        getTargetFromEvent: function(e) {
+                            return this.getEl();
+                        },
+
+                        onNodeOver : function(dataRow, node, dragZone, e, data ) {
+                            if(data.records.length == 1) {
+                                var record = data.records[0];
+                                var data = record.data;
+
+                                if (dataRow.type == data.elementType) {
+                                    return Ext.dd.DropZone.prototype.dropAllowed;
+                                }
+                            }
+                            return Ext.dd.DropZone.prototype.dropNotAllowed;
+                        }.bind(this, data),
+
+                        onNodeDrop : function(myRowIndex, target, dd, e, data) {
+                            if (pimcore.helpers.dragAndDropValidateSingleItem(data)) {
+                                try {
+                                    var record = data.records[0];
+                                    var data = record.data;
+
+                                    var myRecord = this.grid.getStore().getAt(myRowIndex);
+
+                                    if (data.elementType != myRecord.get("type")) {
+                                        return false;
+                                    }
+
+                                    myRecord.set("data", data.path);
+
+                                    this.updateRows();
+
+                                    return true;
+                                } catch (e) {
+                                    console.log(e);
+                                }
+                            }
+                        }.bind(this, storeIndex)
+                    });
+
+                }
+            }
+            catch (e) {
                 console.log(e);
             }
         }
     },
 
+
+
     getTypeRenderer: function (value, metaData, record, rowIndex, colIndex, store) {
+
+        if (value == "input") {
+            value = "text";
+        }
         return '<div class="pimcore_icon_' + Ext.util.Format.htmlEncode(value) + ' pimcore_property_grid_type_column" name="' + Ext.util.Format.htmlEncode(record.data.name) + '">&nbsp;</div>';
     },
 
+
     getCellRenderer: function (value, metaData, record, rowIndex, colIndex, store) {
+
         var data = store.getAt(rowIndex).data;
         var type = data.type;
-        return pimcore.asset.metadata.tags[type].prototype.getGridCellRenderer(value, metaData, record, rowIndex, colIndex, store);
+
+        if (type == "textarea") {
+            return nl2br(Ext.util.Format.htmlEncode(value));
+        } else if (type == "document" || type == "asset" || type == "object") {
+            if (value) {
+                return '<div class="pimcore_property_droptarget">' + value + '</div>';
+            } else {
+                return '<div class="pimcore_property_droptarget">&nbsp;</div>';
+            }
+        } else if (type == "date") {
+            if (value) {
+                if(!(value instanceof Date)) {
+                    value = new Date(value * 1000);
+                }
+                return Ext.Date.format(value, "Y-m-d");
+            }
+        } else if (type == "checkbox") {
+            if (value) {
+                return '<div style="text-align: left"><div role="button" class="x-grid-checkcolumn x-grid-checkcolumn-checked" style=""></div></div>';
+            } else {
+                return '<div style="text-align: left"><div role="button" class="x-grid-checkcolumn" style=""></div></div>';
+            }
+        }
+
+        return Ext.util.Format.htmlEncode(value);
     },
+
+
 
     addSetFromUserDefined: function (customKey, customType, customLanguage) {
         this.add(customKey.getValue(), customType.getValue(), false, customLanguage.getValue());
@@ -316,6 +408,9 @@ pimcore.asset.metadata.grid = Class.create({
         }
 
         if (!value) {
+            if (type == "input" || type == "textarea") {
+                value = "";
+            }
             value = "";
         }
 
@@ -324,7 +419,7 @@ pimcore.asset.metadata.grid = Class.create({
         }
 
         // check for duplicate name
-        var duplicateIndex = store.findBy(function (record, id) {
+        var dublicateIndex = store.findBy(function (record, id) {
             if (record.data.name.toLowerCase() == key.toLowerCase()) {
                 if(String(record.data.language).toLowerCase() == language.toLowerCase()) {
                     return true;
@@ -333,31 +428,69 @@ pimcore.asset.metadata.grid = Class.create({
             return false;
         });
 
-        if (duplicateIndex >= 0) {
+        if (dublicateIndex >= 0) {
             Ext.MessageBox.alert(t("error"), t("name_already_in_use"));
             return;
         }
 
-        store.add({
+        var model = store.getModel();
+        var newRecord = new model({
             name: key,
             data: value,
             type: type,
             language: language
         });
+
+        store.add(newRecord);
         this.grid.getView().refresh();
     },
 
     cellMousedown: function (grid, cell, rowIndex, cellIndex, e) {
+
+        // this is used for the boolean field type
+
         var store = grid.getStore();
         var record = store.getAt(rowIndex);
-        pimcore.asset.metadata.tags[record.data.type].prototype.handleGridCellClick(grid, cell, rowIndex, cellIndex, e);
+        var data = record.data;
+        var type = data.type;
+
+        if (type == "checkbox") {
+            record.set("data", !record.data.data);
+        }
     },
 
-    getCellEditor: function (record) {
-        return pimcore.asset.metadata.tags[record.data.type].prototype.getGridCellEditor("custom", record);
+    getCellEditor: function (record, defaultField ) {
+        var data = record.data;
+
+        var type = data.type;
+        var property;
+
+        if (type == "input") {
+            property = Ext.create('Ext.form.TextField');
+        } else if (type == "textarea") {
+            property = Ext.create('Ext.form.TextArea');
+        } else if (type == "document" || type == "asset" || type == "object") {
+            //no editor needed here
+        } else if (type == "date") {
+            property = Ext.create('Ext.form.field.Date', {
+                format: "Y-m-d"
+            });
+        } else if (type == "checkbox") {
+            //no editor needed here
+        } else if (type == "select") {
+            var config = data.config;
+            property =  Ext.create('Ext.form.ComboBox', {
+                triggerAction: 'all',
+                editable: false,
+                store: config.split(",")
+            });
+        }
+
+        return property;
     },
 
     getValues : function () {
+
         if (!this.grid.rendered) {
             throw "metadata not available";
         }
@@ -368,11 +501,13 @@ pimcore.asset.metadata.grid = Class.create({
 
         var records = store.getRange();
 
-        for (let i = 0; i < records.length; i++) {
-            let currentData = records[i];
+        for (var i = 0; i < records.length; i++) {
+            var currentData = records[i];
             if (currentData) {
-                let data = currentData.data.data;
-                data = pimcore.asset.metadata.tags[currentData.data.type].prototype.marshal(data);
+                var data = currentData.data.data;
+                if (data && currentData.data.type == "date") {
+                    data = data.valueOf() / 1000;
+                }
                 values.push({
                     data: data,
                     type: currentData.data.type,
@@ -382,37 +517,47 @@ pimcore.asset.metadata.grid = Class.create({
             }
         }
 
+
         return values;
     },
 
-    handleAddPredefinedDefinitions: function() {
+    addSetFromPredefinedDefined: function() {
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_settings_getpredefinedmetadata'),
+            url: "/admin/settings/get-predefined-metadata",
             params: {
                 type: "asset",
                 subType: this.asset.type
             },
-            success: this.doAddPredefinedDefinitions.bind(this)
+            success: this.doAddSet.bind(this)
+
         });
+
     },
 
-    doAddPredefinedDefinitions: function(response) {
+    doAddSet: function(response) {
         var data = Ext.decode(response.responseText);
         data = data.data;
         var store = this.grid.getStore();
         var added = false;
 
-        for (let i = 0; i < data.length; i++) {
-            let item = data[i];
-            let key = item.name || "";
-            let language = item.language || "";
+        var i;
+        for (i = 0; i < data.length; i++) {
+            var item = data[i];
+            var key = item.name;
+            var language = item.language;
+            if (!key) {
+                key = "";
+            }
+            if (!language) {
+                language = "";
+            }
 
             if (!item.type){
                 continue;
             }
 
-            var duplicateIndex = store.findBy(function (record, id) {
+            var dublicateIndex = store.findBy(function (record, id) {
                 if (record.data.name.toLowerCase() == key.toLowerCase()) {
                     if(String(record.data.language).toLowerCase() == language.toLowerCase()) {
                         return true;
@@ -421,11 +566,13 @@ pimcore.asset.metadata.grid = Class.create({
                 return false;
             });
 
-            if (duplicateIndex < 0) {
-                let value = item.data;
-                value = pimcore.asset.metadata.tags[item.type].prototype.unmarshal(value);
+            if (dublicateIndex < 0) {
 
-                let newRecord = {
+                var value = item.data;
+                if (item.type == "date" && value) {
+                    value = new Date(intval(value) * 1000);
+                }
+                var newRecord = {
                     name: key,
                     data: value,
                     type: item.type,
@@ -436,10 +583,12 @@ pimcore.asset.metadata.grid = Class.create({
                 store.add(newRecord);
                 added = true;
             }
+
         }
 
         if (added) {
             this.grid.getView().refresh();
         }
+
     }
 });

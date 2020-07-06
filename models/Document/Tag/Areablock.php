@@ -55,11 +55,6 @@ class Areablock extends Model\Document\Tag implements BlockInterface
     protected $blockStarted;
 
     /**
-     * @var array
-     */
-    private $brickTypeUsageCounter = [];
-
-    /**
      * @see Document\Tag\TagInterface::getType
      *
      * @return string
@@ -81,8 +76,6 @@ class Areablock extends Model\Document\Tag implements BlockInterface
 
     /**
      * @see Document\Tag\TagInterface::admin
-     *
-     * @return void
      */
     public function admin()
     {
@@ -91,8 +84,6 @@ class Areablock extends Model\Document\Tag implements BlockInterface
 
     /**
      * @see Document\Tag\TagInterface::frontend
-     *
-     * @return void
      */
     public function frontend()
     {
@@ -154,12 +145,6 @@ class Areablock extends Model\Document\Tag implements BlockInterface
                 $disabled = true;
             }
 
-            $brickTypeLimit = $this->options['limits'][$this->currentIndex['type']] ?? 100000;
-            $brickTypeUsageCounter = $this->brickTypeUsageCounter[$this->currentIndex['type']] ?? 0;
-            if ($brickTypeUsageCounter >= $brickTypeLimit) {
-                $disabled = true;
-            }
-
             if (!$this->getTagHandler()->isBrickEnabled($this, $index['type']) && $options['dontCheckEnabled'] != true) {
                 $disabled = true;
             }
@@ -215,8 +200,6 @@ class Areablock extends Model\Document\Tag implements BlockInterface
 
         if ($this->editmode || !isset($this->currentIndex['hidden']) || !$this->currentIndex['hidden']) {
             $this->getTagHandler()->renderAreaFrontend($info);
-            $this->brickTypeUsageCounter += [$this->currentIndex['type'] => 0];
-            $this->brickTypeUsageCounter[$this->currentIndex['type']]++;
         }
 
         $this->current++;
@@ -289,8 +272,8 @@ class Areablock extends Model\Document\Tag implements BlockInterface
             'areablock_toolbar' => [
                 'width' => 172,
                 'buttonWidth' => 168,
-                'buttonMaxCharacters' => 20,
-            ],
+                'buttonMaxCharacters' => 20
+            ]
         ];
     }
 
@@ -303,7 +286,7 @@ class Areablock extends Model\Document\Tag implements BlockInterface
 
         $options = parent::getEditmodeOptions();
         $options = array_merge($options, [
-            'options' => $configOptions,
+            'options' => $configOptions
         ]);
 
         return $options;
@@ -318,7 +301,7 @@ class Areablock extends Model\Document\Tag implements BlockInterface
 
         $attributes = array_merge($attributes, [
             'name' => $this->getName(),
-            'type' => $this->getType(),
+            'type' => $this->getType()
         ]);
 
         return $attributes;
@@ -378,7 +361,7 @@ class Areablock extends Model\Document\Tag implements BlockInterface
         $outerAttributes = [
             'key' => $this->indices[$this->current]['key'],
             'type' => $this->indices[$this->current]['type'],
-            'data-hidden' => $hidden,
+            'data-hidden' => $hidden
         ];
 
         $attr = HtmlUtils::assembleAttributeString($attributes);
@@ -502,7 +485,7 @@ class Areablock extends Model\Document\Tag implements BlockInterface
 
         $result = [
             'name' => [],
-            'index' => [],
+            'index' => []
         ];
 
         foreach ($areas as $area) {

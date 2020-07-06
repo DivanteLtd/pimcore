@@ -33,37 +33,7 @@ class PageController extends DocumentControllerBase
     use ElementEditLockHelperTrait;
 
     /**
-     * @Route("/save-to-session", name="pimcore_admin_document_page_savetosession", methods={"POST"})
-     *
-     * {@inheritDoc}
-     */
-    public function saveToSessionAction(Request $request)
-    {
-        return parent::saveToSessionAction($request);
-    }
-
-    /**
-     * @Route("/remove-from-session", name="pimcore_admin_document_page_removefromsession", methods={"DELETE"})
-     *
-     * {@inheritDoc}
-     */
-    public function removeFromSessionAction(Request $request)
-    {
-        return parent::removeFromSessionAction($request);
-    }
-
-    /**
-     * @Route("/change-master-document", name="pimcore_admin_document_page_changemasterdocument", methods={"PUT"})
-     *
-     * {@inheritDoc}
-     */
-    public function changeMasterDocumentAction(Request $request)
-    {
-        return parent::changeMasterDocumentAction($request);
-    }
-
-    /**
-     * @Route("/get-data-by-id", name="pimcore_admin_document_page_getdatabyid", methods={"GET"})
+     * @Route("/get-data-by-id", methods={"GET"})
      *
      * @param Request $request
      *
@@ -119,7 +89,7 @@ class PageController extends DocumentControllerBase
     }
 
     /**
-     * @Route("/save", name="pimcore_admin_document_page_save", methods={"PUT", "POST"})
+     * @Route("/save", methods={"PUT", "POST"})
      *
      * @param Request $request
      *
@@ -181,15 +151,12 @@ class PageController extends DocumentControllerBase
             $page->save();
             $this->saveToSession($page);
 
-            $this->addAdminStyle($page, ElementAdminStyleEvent::CONTEXT_EDITOR, $treeData);
-
             return $this->adminJson([
                 'success' => true,
-                'treeData' => $treeData,
                 'data' => [
                     'versionDate' => $page->getModificationDate(),
-                    'versionCount' => $page->getVersionCount(),
-                ],
+                    'versionCount' => $page->getVersionCount()
+                ]
             ]);
         } elseif ($page->isAllowed('save')) {
             $this->setValuesToDocument($request, $page);
@@ -206,7 +173,7 @@ class PageController extends DocumentControllerBase
     }
 
     /**
-     * @Route("/get-list", name="pimcore_admin_document_page_getlist", methods={"GET"})
+     * @Route("/get-list", methods={"GET"})
      *
      * @param Request $request
      *
@@ -220,12 +187,12 @@ class PageController extends DocumentControllerBase
 
         return $this->adminJson([
             'success' => true,
-            'data' => $data,
+            'data' => $data
         ]);
     }
 
     /**
-     * @Route("/generate-screenshot", name="pimcore_admin_document_page_generatescreenshot", methods={"POST"})
+     * @Route("/generate-screenshot", methods={"POST"})
      *
      * @param Request $request
      *
@@ -263,7 +230,7 @@ class PageController extends DocumentControllerBase
     }
 
     /**
-     * @Route("/check-pretty-url", name="pimcore_admin_document_page_checkprettyurl", methods={"POST"})
+     * @Route("/check-pretty-url", methods={"POST"})
      *
      * @param Request $request
      *
@@ -304,7 +271,7 @@ class PageController extends DocumentControllerBase
         $list = new Document\Listing();
         $list->setCondition('(CONCAT(path, `key`) = ? OR id IN (SELECT id from documents_page WHERE prettyUrl = ?))
             AND id != ?', [
-            $path, $path, $docId,
+            $path, $path, $docId
         ]);
 
         if ($list->getTotalCount() > 0) {
@@ -319,7 +286,7 @@ class PageController extends DocumentControllerBase
     }
 
     /**
-     * @Route("/clear-editable-data", name="pimcore_admin_document_page_cleareditabledata", methods={"PUT"})
+     * @Route("/clear-editable-data", methods={"PUT"})
      *
      * @param Request $request
      *
@@ -353,7 +320,7 @@ class PageController extends DocumentControllerBase
         $this->saveToSession($doc, true);
 
         return $this->adminJson([
-            'success' => true,
+            'success' => true
         ]);
     }
 

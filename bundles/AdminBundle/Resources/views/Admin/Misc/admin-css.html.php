@@ -23,7 +23,7 @@
             $treetype = $cv["treetype"] ? $cv["treetype"] : "object";
             ?>
     .pimcore_<?= $treetype ?>_customview_icon_<?= $cv["id"]; ?> {
-        background: center / contain url(<?= $cv["icon"]; ?>) no-repeat !important;
+        background: url(<?= $cv["icon"]; ?>) center center no-repeat !important;
     }
     <?php } ?>
 

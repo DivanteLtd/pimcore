@@ -75,7 +75,7 @@ pimcore.layout.portlets.customreports = Class.create(pimcore.layout.portlets.abs
                 autoLoad: true,
                 proxy: {
                     type: 'ajax',
-                    url: Routing.generate('pimcore_admin_reports_customreport_portletreportlist'),
+                    url: '/admin/reports/custom-report/portlet-report-list',
                     reader: {
                         type: 'json',
                         rootProperty: 'data'
@@ -122,7 +122,7 @@ pimcore.layout.portlets.customreports = Class.create(pimcore.layout.portlets.abs
     updateSettings: function() {
         this.config = Ext.getCmp("pimcore_portlet_selected_custom_report").getValue();
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_portal_updateportletconfig'),
+            url: "/admin/portal/update-portlet-config",
             method: 'PUT',
             params: {
                 key: this.portal.key,
@@ -138,7 +138,7 @@ pimcore.layout.portlets.customreports = Class.create(pimcore.layout.portlets.abs
     updateChart: function() {
         if(this.config) {
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_reports_customreport_get'),
+                url: "/admin/reports/custom-report/get",
                 params: {
                     name: this.config
                 },
@@ -199,7 +199,7 @@ pimcore.layout.portlets.customreports = Class.create(pimcore.layout.portlets.abs
                 autoDestroy: true,
                 proxy: {
                     type: 'ajax',
-                    url: Routing.generate('pimcore_admin_reports_customreport_chart'),
+                    url: "/admin/reports/custom-report/chart?",
                     extraParams: {
                         name: this.config
                     },
@@ -277,7 +277,7 @@ pimcore.layout.portlets.customreports = Class.create(pimcore.layout.portlets.abs
             }
 
             var chartStore = pimcore.helpers.grid.buildDefaultStore(
-                Routing.generate('pimcore_admin_reports_customreport_chart'),
+                '/admin/reports/custom-report/chart?',
                 chartFields,
                 400000000
             );
@@ -350,7 +350,7 @@ pimcore.layout.portlets.customreports = Class.create(pimcore.layout.portlets.abs
 
 
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_reports_customreport_get'),
+                url: "/admin/reports/custom-report/get",
                 params: {
                     name: this.config
                 },
@@ -474,7 +474,7 @@ pimcore.layout.portlets.customreports = Class.create(pimcore.layout.portlets.abs
 
     createGrid: function() {
         var itemsPerPage = pimcore.helpers.grid.getDefaultPageSize();
-        var url = Routing.generate('pimcore_admin_reports_customreport_data');
+        var url = '/admin/reports/custom-report/data?';
 
         this.store = pimcore.helpers.grid.buildDefaultStore(
             url, this.storeFields, itemsPerPage

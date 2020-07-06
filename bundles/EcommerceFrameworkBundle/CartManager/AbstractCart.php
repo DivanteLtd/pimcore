@@ -518,11 +518,11 @@ abstract class AbstractCart extends AbstractModel implements CartInterface
     }
 
     /**
-     * @return bool
+     * @return bool|void
      */
     public function isEmpty()
     {
-        return count($this->getItems()) === 0;
+        return count($this->getItems()) == 0;
     }
 
     /**
@@ -755,7 +755,7 @@ abstract class AbstractCart extends AbstractModel implements CartInterface
      */
     public function getCheckoutData($key)
     {
-        $entry = $this->checkoutData[$key] ?? null;
+        $entry = $this->checkoutData[$key];
         if ($entry) {
             return $this->checkoutData[$key]->getData();
         } else {

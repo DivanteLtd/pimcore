@@ -178,7 +178,7 @@ pimcore.settings.email.log = Class.create({
                     icon: '/bundles/pimcoreadmin/img/flat-color-icons/feedback.svg',
                     handler: function(grid, rowIndex){
                         var rec = grid.getStore().getAt(rowIndex);
-                        var url = Routing.generate('pimcore_admin_email_showemaillog', {id: rec.get('id'), type: 'html'});
+                        var url = '/admin/email/show-email-log?id=' + rec.get('id') + '&type=html';
                         var iframe = new Ext.Window({
                             title: t('html'),
                             width: iFrameSettings.width,
@@ -209,7 +209,7 @@ pimcore.settings.email.log = Class.create({
                     icon: '/bundles/pimcoreadmin/img/flat-color-icons/text.svg',
                     handler: function(grid, rowIndex){
                         var rec = grid.getStore().getAt(rowIndex);
-                        var url = Routing.generate('pimcore_admin_email_showemaillog', {id: rec.get('id'), type: 'text'});
+                        var url = '/admin/email/show-email-log?id=' + rec.get('id') + '&type=text';
                         var iframe = new Ext.Window({
                             title: t('text'),
                             width: iFrameSettings.width,
@@ -241,7 +241,7 @@ pimcore.settings.email.log = Class.create({
                     icon: '/bundles/pimcoreadmin/img/flat-color-icons/info.svg',
                     handler: function(grid, rowIndex){
                         var rec = grid.getStore().getAt(rowIndex);
-                        var url = Routing.generate('pimcore_admin_email_showemaillog', {id: rec.get('id'), type: 'params'});
+                        var url = '/admin/email/show-email-log?id=' + rec.get('id') + '&type=params';
                         var store = Ext.create('Ext.data.TreeStore', {
                             proxy: {
                                 type: 'ajax',
@@ -321,7 +321,7 @@ pimcore.settings.email.log = Class.create({
                                 function(btn){
                                     if (btn == 'yes'){
                                         Ext.Ajax.request({
-                                            url: Routing.generate('pimcore_admin_email_resendemail'),
+                                            url: '/admin/email/resend-email',
                                             method: 'POST',
                                             success: function(response){
                                                 var data = Ext.decode( response.responseText );
@@ -362,7 +362,7 @@ pimcore.settings.email.log = Class.create({
                             var rec = grid.getStore().getAt(rowIndex);
 
                             Ext.Ajax.request({
-                                url: Routing.generate('pimcore_admin_email_showemaillog', {id: rec.get('id'), type: 'details'}),
+                                url: '/admin/email/show-email-log?id=' + rec.get('id') + '&type=details',
                                 success: function(response){
                                     var data = Ext.decode( response.responseText );
                                     var win = this.getForwardEmailWindow(data);
@@ -392,7 +392,7 @@ pimcore.settings.email.log = Class.create({
                     handler: function (grid, rowIndex) {
                         var rec = grid.getStore().getAt(rowIndex);
                         Ext.Ajax.request({
-                            url: Routing.generate('pimcore_admin_email_deleteemaillog'),
+                            url: '/admin/email/delete-email-log',
                             method: 'DELETE',
                             success: function(response){
                                 var data = Ext.decode( response.responseText );
@@ -418,7 +418,7 @@ pimcore.settings.email.log = Class.create({
             "emailLogExistsText"];
 
         this.store = pimcore.helpers.grid.buildDefaultStore(
-            Routing.generate('pimcore_admin_email_emaillogs'),
+            '/admin/email/email-logs?',
             storeFields,
             itemsPerPage
         );
@@ -471,7 +471,7 @@ pimcore.settings.email.log = Class.create({
     getForwardEmailWindow: function (data) {
         if (data) {
             var emailType = data.emailLogExistsHtml ? 'html' : 'text';
-            var emailPreviewUrl = Routing.generate('pimcore_admin_email_showemaillog', {id: data.id, type: emailType});
+            var emailPreviewUrl = '/admin/email/show-email-log?id=' + data.id + '&type=' + emailType;
 
             var win =  new Ext.Window({
                 width: 800,
@@ -538,7 +538,7 @@ pimcore.settings.email.log = Class.create({
                         var params = form.getFieldValues();
                         if (form.isValid()) {
                             Ext.Ajax.request({
-                                url: Routing.generate('pimcore_admin_email_resendemail'),
+                                url: '/admin/email/resend-email',
                                 method: 'POST',
                                 success: function (response) {
                                     var data = Ext.decode(response.responseText);

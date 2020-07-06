@@ -16,7 +16,7 @@ pimcore.report.custom.toolbarenricher = Class.create(pimcore.plugin.admin, {
 
             // get available reports
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_reports_customreport_getreportconfig'),
+                url: "/admin/reports/custom-report/get-report-config",
                 success: function (response) {
                     var res = Ext.decode(response.responseText);
                     var report;

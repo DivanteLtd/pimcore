@@ -21,7 +21,7 @@ pimcore.element.selector.document = Class.create(pimcore.element.selector.abstra
             pageSize: 50,
             proxy : {
                 type: 'ajax',
-                url: Routing.generate('pimcore_admin_searchadmin_search_find'),
+                url: '/admin/search/search/find',
                 reader: {
                     type: 'json',
                     rootProperty: 'data'

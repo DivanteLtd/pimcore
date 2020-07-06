@@ -180,7 +180,7 @@ pimcore.document.tags.renderlet = Class.create(pimcore.document.tag, {
 
         Ext.Ajax.request({
             method: "get",
-            url: Routing.generate('pimcore_admin_document_renderlet_renderlet'),
+            url: "/admin/document_tag/renderlet",
             success: function (response) {
                 setContent(response.responseText);
             }.bind(this),

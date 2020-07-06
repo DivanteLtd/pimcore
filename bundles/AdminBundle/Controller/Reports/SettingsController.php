@@ -26,7 +26,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class SettingsController extends ReportsControllerBase
 {
     /**
-     * @Route("/get", name="pimcore_admin_reports_settings_get", methods={"GET"})
+     * @Route("/get", methods={"GET"})
      *
      * @param Request $request
      *
@@ -45,14 +45,14 @@ class SettingsController extends ReportsControllerBase
 
         $response = [
             'values' => $config,
-            'config' => [],
+            'config' => []
         ];
 
         return $this->adminJson($response);
     }
 
     /**
-     * @Route("/save", name="pimcore_admin_reports_settings_save", methods={"PUT"})
+     * @Route("/save", methods={"PUT"})
      *
      * @param Request $request
      * @param ReportConfigWriter $configWriter

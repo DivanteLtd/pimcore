@@ -21,7 +21,7 @@ pimcore.report.settings = Class.create({
 
     getData: function () {
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_reports_settings_get'),
+            url: "/admin/reports/settings/get",
             success: function (response) {
 
                 this.data = Ext.decode(response.responseText);
@@ -134,7 +134,7 @@ pimcore.report.settings = Class.create({
         }
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_reports_settings_save'),
+            url: "/admin/reports/settings/save",
             method: "PUT",
             params: {
                 data: Ext.encode(values)

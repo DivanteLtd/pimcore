@@ -127,10 +127,8 @@ class Helper
 
                 $viewModel->currentOrderBy = implode('#', reset($orderByList));
             }
-            if ($orderByList) {
-                $productList->setOrderKey($orderByList);
-                $productList->setOrder('ASC');
-            }
+            $productList->setOrderKey($orderByList);
+            $productList->setOrder('ASC');
         }
 
         if ($filterService) {

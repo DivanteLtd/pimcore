@@ -134,7 +134,7 @@ class Time extends Model\DataObject\ClassDefinition\Data\Input
     }
 
     /**
-     * @param string|null $data
+     * @param string $data
      *
      * @return bool
      */

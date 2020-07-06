@@ -26,8 +26,6 @@ use Pimcore\Tool\Text;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
- * @deprecated since version 6.7.0 and will be removed in 7.0.0.
- *
  * @property DefaultFactFinderConfig $tenantConfig
  */
 class DefaultFactFinder extends AbstractMockupCacheWorker implements WorkerInterface, BatchProcessingWorkerInterface
@@ -40,20 +38,9 @@ class DefaultFactFinder extends AbstractMockupCacheWorker implements WorkerInter
      */
     protected $_sqlChangeLog = [];
 
-    /**
-     * @param FactFinderConfigInterface $tenantConfig
-     * @param ConnectionInterface $db
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param string|null $workerMode
-     */
-    public function __construct(FactFinderConfigInterface $tenantConfig, ConnectionInterface $db, EventDispatcherInterface $eventDispatcher, string $workerMode = null)
+    public function __construct(FactFinderConfigInterface $tenantConfig, ConnectionInterface $db, EventDispatcherInterface $eventDispatcher)
     {
-        @trigger_error(
-            'Class ' . self::class . ' is deprecated since version 6.7.0 and will be removed in 7.0.0.',
-            E_USER_DEPRECATED
-        );
-
-        parent::__construct($tenantConfig, $db, $eventDispatcher, $workerMode);
+        parent::__construct($tenantConfig, $db, $eventDispatcher);
     }
 
     protected function getSystemAttributes()
@@ -77,7 +64,7 @@ class DefaultFactFinder extends AbstractMockupCacheWorker implements WorkerInter
             'worker_id',
             'in_preparation_queue',
             'preparation_worker_timestamp',
-            'preparation_worker_id', ];
+            'preparation_worker_id'];
     }
 
     protected function dbexec($sql)
@@ -103,9 +90,6 @@ class DefaultFactFinder extends AbstractMockupCacheWorker implements WorkerInter
         $primaryIdColumnType = $this->tenantConfig->getIdColumnType(true);
         $idColumnType = $this->tenantConfig->getIdColumnType(false);
 
-        /**
-         * @TODO Pimcore 7 - remove worker columns
-         */
         $this->db->query('CREATE TABLE IF NOT EXISTS `' . $this->getStoreTableName() . "` (
           `o_id` $primaryIdColumnType,
           `o_virtualProductId` $idColumnType,
@@ -211,6 +195,8 @@ class DefaultFactFinder extends AbstractMockupCacheWorker implements WorkerInter
                 $data = $this->getDefaultDataForIndex($object, $subObjectId);
                 $data['categoryPaths'] = implode('|', (array)$data['categoryPaths']);
                 $data['crc_current'] = '';
+                $data['preparation_worker_timestamp'] = 0;
+                $data['preparation_worker_id'] = $this->db->quote(null);
                 $data['in_preparation_queue'] = 0;
 
                 foreach ($this->tenantConfig->getAttributes() as $attribute) {
@@ -272,8 +258,6 @@ class DefaultFactFinder extends AbstractMockupCacheWorker implements WorkerInter
     }
 
     /**
-     * @deprecated
-     *
      * first run processUpdateIndexQueue of trait and then commit updated entries if there are some
      *
      * @param int $limit

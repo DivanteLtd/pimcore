@@ -15,6 +15,8 @@
 pimcore.registerNS("pimcore.object.quantityValue.unitsettings");
 pimcore.object.quantityValue.unitsettings = Class.create({
 
+    dataUrl: '/admin/quantity-value/unit-proxy?',
+
     initialize: function () {
         this.getTabPanel();
     },
@@ -66,7 +68,7 @@ pimcore.object.quantityValue.unitsettings = Class.create({
             proxy: {
                 type: 'ajax',
                 async: false,
-                url: Routing.generate('pimcore_admin_dataobject_quantityvalue_unitproxyget'),
+                url: this.dataUrl,
                 reader: {
                     type: 'json',
                     rootProperty: 'data'
@@ -139,7 +141,7 @@ pimcore.object.quantityValue.unitsettings = Class.create({
         this.store = new Ext.data.Store({
             proxy: {
                 type: 'ajax',
-                url: Routing.generate('pimcore_admin_dataobject_quantityvalue_unitproxyget'),
+                url: this.dataUrl,
                 reader: {
                     type: 'json',
                     rootProperty: 'data',
@@ -153,10 +155,10 @@ pimcore.object.quantityValue.unitsettings = Class.create({
                     encode: 'true'
                 },
                 api: {
-                    create  : Routing.generate('pimcore_admin_dataobject_quantityvalue_unitproxyget', {xaction: 'create'}),
-                    read    : Routing.generate('pimcore_admin_dataobject_quantityvalue_unitproxyget', {xaction: 'read'}),
-                    update  : Routing.generate('pimcore_admin_dataobject_quantityvalue_unitproxyget', {xaction: 'update'}),
-                    destroy : Routing.generate('pimcore_admin_dataobject_quantityvalue_unitproxyget', {xaction: 'destroy'})
+                    create  : this.dataUrl + "xaction=create",
+                    read    : this.dataUrl + "xaction=read",
+                    update  : this.dataUrl + "xaction=update",
+                    destroy : this.dataUrl + "xaction=destroy"
                 },
                 pageSize: itemsPerPage
             },

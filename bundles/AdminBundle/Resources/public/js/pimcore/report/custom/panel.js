@@ -39,7 +39,7 @@ pimcore.report.custom.panel = Class.create({
                 autoSync: true,
                 proxy: {
                     type: 'ajax',
-                    url: Routing.generate('pimcore_admin_reports_customreport_tree'),
+                    url: '/admin/reports/custom-report/tree',
                     reader: {
                         type: 'json'
                     }
@@ -121,7 +121,7 @@ pimcore.report.custom.panel = Class.create({
         }
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_reports_customreport_get'),
+            url: "/admin/reports/custom-report/get",
             params: {
                 name: id
             },
@@ -175,7 +175,7 @@ pimcore.report.custom.panel = Class.create({
             }
 
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_reports_customreport_add'),
+                url: "/admin/reports/custom-report/add",
                 method: 'POST',
                 params: {
                     name: value
@@ -205,7 +205,7 @@ pimcore.report.custom.panel = Class.create({
 
     deleteField: function (tree, record) {
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_reports_customreport_delete'),
+            url: "/admin/reports/custom-report/delete",
             method: 'DELETE',
             params: {
                 name: record.data.id
@@ -225,7 +225,7 @@ pimcore.report.custom.panel = Class.create({
     doCloneField: function (tree, record, button, value) {
         if (button == "ok") {
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_reports_customreport_clone'),
+                url: "/admin/reports/custom-report/clone",
                 method: 'POST',
                 params: {
                     name: record.data.id,

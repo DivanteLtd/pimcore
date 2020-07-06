@@ -97,7 +97,7 @@ class Lock extends Model\AbstractModel
      * @param string $key
      * @param int $expire
      *
-     * @return bool
+     * @return mixed
      */
     public static function isLocked($key, $expire = 120)
     {

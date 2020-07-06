@@ -26,7 +26,7 @@ pimcore.element.tag.assignment = Class.create({
             var gridStore = Ext.create("Ext.data.Store", {
                 proxy: {
                     type: 'ajax',
-                    url: Routing.generate('pimcore_admin_tags_loadtagsforelement'),
+                    url: '/admin/tags/load-tags-for-element',
                     extraParams: {
                         assignmentCId: this.element.id,
                         assignmentCType: this.elementType
@@ -54,7 +54,7 @@ pimcore.element.tag.assignment = Class.create({
                     gridStore.add(record);
 
                     Ext.Ajax.request({
-                        url: Routing.generate('pimcore_admin_tags_addtagtoelement'),
+                        url: "/admin/tags/add-tag-to-element",
                         method: 'PUT',
                         params: {
                             assignmentElementId: this.element.id,
@@ -147,7 +147,7 @@ pimcore.element.tag.assignment = Class.create({
 
     removeTagFromElement: function(tagId) {
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_tags_removetagfromelement'),
+            url: "/admin/tags/remove-tag-from-element",
             method: 'DELETE',
             params: {
                 assignmentElementId: this.element.id,
@@ -160,7 +160,7 @@ pimcore.element.tag.assignment = Class.create({
 
     prepareBatchUpdate: function(removeAndApply) {
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_tags_getbatchassignmentjobs'),
+            url: "/admin/tags/get-batch-assignment-jobs",
             params: {
                 elementId: this.element.id,
                 elementType: this.elementType
@@ -188,7 +188,7 @@ pimcore.element.tag.assignment = Class.create({
 
                     for (var i=0; i<responseJson.idLists.length; i++) {
                         jobs.push({
-                            url: Routing.generate('pimcore_admin_tags_dobatchassignment'),
+                            url: "/admin/tags/do-batch-assignment",
                             method: 'PUT',
                             params: array_merge(params, {
                                 childrenIds: Ext.encode(responseJson.idLists[i])

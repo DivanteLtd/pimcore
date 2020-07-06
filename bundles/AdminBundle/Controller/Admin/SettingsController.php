@@ -22,7 +22,6 @@ use Pimcore\Config;
 use Pimcore\Db\ConnectionInterface;
 use Pimcore\Event\SystemEvents;
 use Pimcore\File;
-use Pimcore\Localization\LocaleServiceInterface;
 use Pimcore\Model;
 use Pimcore\Model\Asset;
 use Pimcore\Model\Document;
@@ -85,7 +84,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/upload-custom-logo", name="pimcore_admin_settings_uploadcustomlogo", methods={"POST"})
+     * @Route("/upload-custom-logo", methods={"POST"})
      *
      * @param Request $request
      *
@@ -114,7 +113,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/delete-custom-logo", name="pimcore_admin_settings_deletecustomlogo", methods={"DELETE"})
+     * @Route("/delete-custom-logo", methods={"DELETE"})
      *
      * @param Request $request
      *
@@ -133,9 +132,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * Used by the predefined metadata grid
-     *
-     * @Route("/predefined-metadata", name="pimcore_admin_settings_metadata", methods={"POST"})
+     * @Route("/metadata", methods={"POST"})
      *
      * @param Request $request
      *
@@ -224,7 +221,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/get-predefined-metadata", name="pimcore_admin_settings_getpredefinedmetadata", methods={"GET"})
+     * @Route("/get-predefined-metadata", methods={"GET"})
      *
      * @param Request $request
      *
@@ -246,7 +243,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/properties", name="pimcore_admin_settings_properties", methods={"POST"})
+     * @Route("/properties", methods={"POST"})
      *
      * @param Request $request
      *
@@ -328,7 +325,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/get-system", name="pimcore_admin_settings_getsystem", methods={"GET"})
+     * @Route("/get-system", methods={"GET"})
      *
      * @param Request $request
      *
@@ -350,7 +347,7 @@ class SettingsController extends AdminController
             if (!empty($short)) {
                 $languageOptions[] = [
                     'language' => $short,
-                    'display' => $translation . " ($short)",
+                    'display' => $translation . " ($short)"
                 ];
                 $validLanguages[] = $short;
             }
@@ -365,7 +362,7 @@ class SettingsController extends AdminController
                 if (!in_array($existingValue, $validLanguages)) {
                     $languageOptions[] = [
                         'language' => $existingValue,
-                        'display' => $existingValue,
+                        'display' => $existingValue
                     ];
                 }
             }
@@ -405,22 +402,21 @@ class SettingsController extends AdminController
                 'client_ip' => $request->getClientIp(),
                 'google_private_key_exists' => file_exists(\Pimcore\Google\Api::getPrivateKeyPath()),
                 'google_private_key_path' => \Pimcore\Google\Api::getPrivateKeyPath(),
-                'path_separator' => PATH_SEPARATOR,
-            ],
+                'path_separator' => PATH_SEPARATOR
+            ]
         ];
 
         return $this->adminJson($response);
     }
 
     /**
-     * @Route("/set-system", name="pimcore_admin_settings_setsystem", methods={"PUT"})
+     * @Route("/set-system", methods={"PUT"})
      *
      * @param Request $request
-     * @param LocaleServiceInterface $localeService
      *
      * @return JsonResponse
      */
-    public function setSystemAction(Request $request, LocaleServiceInterface $localeService)
+    public function setSystemAction(Request $request)
     {
         $this->checkPermission('system_settings');
 
@@ -444,7 +440,7 @@ class SettingsController extends AdminController
                 $fallbackLanguages[$language] = str_replace(' ', '', $values['general.fallbackLanguages.' . $language]);
             }
 
-            if ($localeService->isLocale($language)) {
+            if (\Pimcore::getContainer()->get('pimcore.locale')->isLocale($language)) {
                 $filteredLanguages[] = $language;
             }
         }
@@ -480,16 +476,16 @@ class SettingsController extends AdminController
                     'steps' => $values['documents.versions.steps'] ?? null,
                 ],
                 'error_pages' => [
-                    'default' => $values['documents.error_pages.default'],
+                    'default' => $values['documents.error_pages.default']
                 ],
                 'allow_trailing_slash' => $values['documents.allowtrailingslash'],
-                'generate_preview' => $values['documents.generatepreview'],
+                'generate_preview' => $values['documents.generatepreview']
             ],
             'objects' => [
                 'versions' => [
                     'days' => $values['objects.versions.days'] ?? null,
                     'steps' => $values['objects.versions.steps'] ?? null,
-                ],
+                ]
             ],
             'assets' => [
                 'versions' => [
@@ -499,24 +495,24 @@ class SettingsController extends AdminController
                 'icc_rgb_profile' => $values['assets.icc_rgb_profile'],
                 'icc_cmyk_profile' => $values['assets.icc_cmyk_profile'],
                 'hide_edit_image' => $values['assets.hide_edit_image'],
-                'disable_tree_preview' => $values['assets.disable_tree_preview'],
+                'disable_tree_preview' => $values['assets.disable_tree_preview']
             ],
             'services' => [
                 'google' => [
                     'client_id' => $values['services.google.client_id'],
                     'email' => $values['services.google.email'],
                     'simple_api_key' => $values['services.google.simpleapikey'],
-                    'browser_api_key' => $values['services.google.browserapikey'],
-                ],
+                    'browser_api_key' => $values['services.google.browserapikey']
+                ]
             ],
             'full_page_cache' => [
                 'enabled' => $values['full_page_cache.enabled'],
                 'lifetime' => $values['full_page_cache.lifetime'],
                 'exclude_patterns' => $cacheExcludePatterns,
-                'exclude_cookie' => $values['full_page_cache.excludeCookie'],
+                'exclude_cookie' => $values['full_page_cache.excludeCookie']
             ],
             'webservice' => [
-                'enabled' => $values['webservice.enabled'],
+                'enabled' => $values['webservice.enabled']
             ],
             'httpclient' => [
                 'adapter' => $values['httpclient.adapter'],
@@ -533,7 +529,7 @@ class SettingsController extends AdminController
                 ],
                 'archive_treshold' => $values['applicationlog.archive_treshold'],
                 'archive_alternative_database' => $values['applicationlog.archive_alternative_database'],
-            ],
+            ]
         ];
 
         //branding
@@ -544,7 +540,7 @@ class SettingsController extends AdminController
                     'color_login_screen' => $values['branding.color_login_screen'],
                     'color_admin_interface' => $values['branding.color_admin_interface'],
                     'login_screen_custom_image' => $values['general.loginscreencustomimage'],
-                ],
+                ]
         ];
 
         // email & newsletter (swiftmailer settings)
@@ -552,10 +548,10 @@ class SettingsController extends AdminController
             $settings['pimcore'][$type] = [
                 'sender' => [
                     'name' => $values[$type . '.sender.name'],
-                    'email' => $values[$type . '.sender.email'], ],
+                    'email' => $values[$type . '.sender.email']],
                 'return' => [
                     'name' => $values[$type . '.return.name'],
-                    'email' => $values[$type . '.return.email'], ],
+                    'email' => $values[$type . '.return.email']],
                 'method' => $values[$type . '.method'],
             ];
 
@@ -603,7 +599,7 @@ class SettingsController extends AdminController
         $this->forward(self::class . '::clearCacheAction', [
             'only_symfony_cache' => false,
             'only_pimcore_cache' => false,
-            'env' => [\Pimcore::getKernel()->getEnvironment()],
+            'env' => [\Pimcore::getKernel()->getEnvironment()]
         ]);
 
         return $this->adminJson(['success' => true]);
@@ -637,7 +633,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/get-web2print", name="pimcore_admin_settings_getweb2print", methods={"GET"})
+     * @Route("/get-web2print", methods={"GET"})
      *
      * @param Request $request
      *
@@ -663,14 +659,14 @@ class SettingsController extends AdminController
         $valueArray['wkhtml2pdfOptions'] = implode("\n", $optionsString);
 
         $response = [
-            'values' => $valueArray,
+            'values' => $valueArray
         ];
 
         return $this->adminJson($response);
     }
 
     /**
-     * @Route("/set-web2print", name="pimcore_admin_settings_setweb2print", methods={"PUT"})
+     * @Route("/set-web2print", methods={"PUT"})
      *
      * @param Request $request
      *
@@ -703,7 +699,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/clear-cache", name="pimcore_admin_settings_clearcache", methods={"DELETE"})
+     * @Route("/clear-cache", methods={"DELETE"})
      *
      * @param Request $request
      * @param KernelInterface $kernel
@@ -727,7 +723,7 @@ class SettingsController extends AdminController
         $this->checkPermissionsHasOneOf(['clear_cache', 'system_settings']);
 
         $result = [
-            'success' => true,
+            'success' => true
         ];
 
         $clearPimcoreCache = !(bool)$request->get('only_symfony_cache');
@@ -792,7 +788,7 @@ class SettingsController extends AdminController
 
                     $result = array_merge($result, [
                         'success' => false,
-                        'errors' => $errors,
+                        'errors' => $errors
                     ]);
                 }
             }
@@ -812,7 +808,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/clear-output-cache", name="pimcore_admin_settings_clearoutputcache", methods={"DELETE"})
+     * @Route("/clear-output-cache", methods={"DELETE"})
      *
      * @param EventDispatcherInterface $eventDispatcher
      *
@@ -834,7 +830,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/clear-temporary-files", name="pimcore_admin_settings_cleartemporaryfiles", methods={"DELETE"})
+     * @Route("/clear-temporary-files", methods={"DELETE"})
      *
      * @param EventDispatcherInterface $eventDispatcher
      *
@@ -860,7 +856,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/staticroutes", name="pimcore_admin_settings_staticroutes", methods={"POST"})
+     * @Route("/staticroutes", methods={"POST"})
      *
      * @param Request $request
      *
@@ -948,7 +944,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/get-available-admin-languages", name="pimcore_admin_settings_getavailableadminlanguages", methods={"GET"})
+     * @Route("/get-available-admin-languages", methods={"GET"})
      *
      * @param Request $request
      *
@@ -964,7 +960,7 @@ class SettingsController extends AdminController
             if (array_key_exists($lang, $locales)) {
                 $langs[] = [
                     'language' => $lang,
-                    'display' => $locales[$lang],
+                    'display' => $locales[$lang]
                 ];
             }
         }
@@ -977,7 +973,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/glossary", name="pimcore_admin_settings_glossary", methods={"POST"})
+     * @Route("/glossary", methods={"POST"})
      *
      * @param Request $request
      *
@@ -1088,7 +1084,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/get-available-sites", name="pimcore_admin_settings_getavailablesites", methods={"GET"})
+     * @Route("/get-available-sites", methods={"GET"})
      *
      * @param Request $request
      *
@@ -1107,7 +1103,7 @@ class SettingsController extends AdminController
                 'rootId' => 1,
                 'domains' => '',
                 'rootPath' => '/',
-                'domain' => $this->trans('main_site'),
+                'domain' => $this->trans('main_site')
             ];
         }
 
@@ -1119,7 +1115,7 @@ class SettingsController extends AdminController
                         'rootId' => $site->getRootId(),
                         'domains' => implode(',', $site->getDomains()),
                         'rootPath' => $site->getRootPath(),
-                        'domain' => $site->getMainDomain(),
+                        'domain' => $site->getMainDomain()
                     ];
                 }
             } else {
@@ -1132,15 +1128,15 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/get-available-countries", name="pimcore_admin_settings_getavailablecountries", methods={"GET"})
+     * @Route("/get-available-countries", methods={"GET"})
      *
-     * @param LocaleServiceInterface $localeService
+     * @param Request $request
      *
      * @return JsonResponse
      */
-    public function getAvailableCountriesAction(LocaleServiceInterface $localeService)
+    public function getAvailableCountriesAction(Request $request)
     {
-        $countries = $localeService->getDisplayRegions();
+        $countries = \Pimcore::getContainer()->get('pimcore.locale')->getDisplayRegions();
         asort($countries);
 
         $options = [];
@@ -1149,7 +1145,7 @@ class SettingsController extends AdminController
             if (strlen($short) == 2) {
                 $options[] = [
                     'key' => $translation . ' (' . $short . ')',
-                    'value' => $short,
+                    'value' => $short
                 ];
             }
         }
@@ -1160,7 +1156,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/thumbnail-adapter-check", name="pimcore_admin_settings_thumbnailadaptercheck", methods={"GET"})
+     * @Route("/thumbnail-adapter-check", methods={"GET"})
      *
      * @param Request $request
      *
@@ -1181,7 +1177,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/thumbnail-tree", name="pimcore_admin_settings_thumbnailtree", methods={"GET", "POST"})
+     * @Route("/thumbnail-tree", methods={"GET", "POST"})
      *
      * @param Request $request
      *
@@ -1209,7 +1205,7 @@ class SettingsController extends AdminController
                         'allowChildren' => true,
                         'iconCls' => 'pimcore_icon_folder',
                         'group' => $item->getGroup(),
-                        'children' => [],
+                        'children' => []
                         ];
                 }
                 $groups[$item->getGroup()]['children'][] =
@@ -1217,14 +1213,14 @@ class SettingsController extends AdminController
                         'id' => $item->getName(),
                         'text' => $item->getName(),
                         'leaf' => true,
-                        'iconCls' => 'pimcore_icon_thumbnails',
+                        'iconCls' => 'pimcore_icon_thumbnails'
                     ];
             } else {
                 $thumbnails[] = [
                     'id' => $item->getName(),
                     'text' => $item->getName(),
                     'leaf' => true,
-                    'iconCls' => 'pimcore_icon_thumbnails',
+                    'iconCls' => 'pimcore_icon_thumbnails'
                 ];
             }
         }
@@ -1237,7 +1233,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/thumbnail-downloadable", name="pimcore_admin_settings_thumbnaildownloadable", methods={"GET"})
+     * @Route("/thumbnail-downloadable", methods={"GET"})
      *
      * @param Request $request
      *
@@ -1265,7 +1261,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/thumbnail-add", name="pimcore_admin_settings_thumbnailadd", methods={"POST"})
+     * @Route("/thumbnail-add", methods={"POST"})
      *
      * @param Request $request
      *
@@ -1291,7 +1287,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/thumbnail-delete", name="pimcore_admin_settings_thumbnaildelete", methods={"DELETE"})
+     * @Route("/thumbnail-delete", methods={"DELETE"})
      *
      * @param Request $request
      *
@@ -1308,7 +1304,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/thumbnail-get", name="pimcore_admin_settings_thumbnailget", methods={"GET"})
+     * @Route("/thumbnail-get", methods={"GET"})
      *
      * @param Request $request
      *
@@ -1324,7 +1320,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/thumbnail-update", name="pimcore_admin_settings_thumbnailupdate", methods={"PUT"})
+     * @Route("/thumbnail-update", methods={"PUT"})
      *
      * @param Request $request
      *
@@ -1371,7 +1367,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/video-thumbnail-adapter-check", name="pimcore_admin_settings_videothumbnailadaptercheck", methods={"GET"})
+     * @Route("/video-thumbnail-adapter-check", methods={"GET"})
      *
      * @param Request $request
      *
@@ -1391,7 +1387,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/video-thumbnail-tree", name="pimcore_admin_settings_videothumbnailtree", methods={"GET", "POST"})
+     * @Route("/video-thumbnail-tree", methods={"GET", "POST"})
      *
      * @param Request $request
      *
@@ -1419,7 +1415,7 @@ class SettingsController extends AdminController
                         'allowChildren' => true,
                         'iconCls' => 'pimcore_icon_folder',
                         'group' => $item->getGroup(),
-                        'children' => [],
+                        'children' => []
                     ];
                 }
                 $groups[$item->getGroup()]['children'][] =
@@ -1427,14 +1423,14 @@ class SettingsController extends AdminController
                         'id' => $item->getName(),
                         'text' => $item->getName(),
                         'leaf' => true,
-                        'iconCls' => 'pimcore_icon_videothumbnails',
+                        'iconCls' => 'pimcore_icon_videothumbnails'
                     ];
             } else {
                 $thumbnails[] = [
                     'id' => $item->getName(),
                     'text' => $item->getName(),
                     'leaf' => true,
-                    'iconCls' => 'pimcore_icon_videothumbnails',
+                    'iconCls' => 'pimcore_icon_videothumbnails'
                 ];
             }
         }
@@ -1447,7 +1443,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/video-thumbnail-add", name="pimcore_admin_settings_videothumbnailadd", methods={"POST"})
+     * @Route("/video-thumbnail-add", methods={"POST"})
      *
      * @param Request $request
      *
@@ -1473,7 +1469,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/video-thumbnail-delete", name="pimcore_admin_settings_videothumbnaildelete", methods={"DELETE"})
+     * @Route("/video-thumbnail-delete", methods={"DELETE"})
      *
      * @param Request $request
      *
@@ -1490,7 +1486,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/video-thumbnail-get", name="pimcore_admin_settings_videothumbnailget", methods={"GET"})
+     * @Route("/video-thumbnail-get", methods={"GET"})
      *
      * @param Request $request
      *
@@ -1506,7 +1502,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/video-thumbnail-update", name="pimcore_admin_settings_videothumbnailupdate", methods={"PUT"})
+     * @Route("/video-thumbnail-update", methods={"PUT"})
      *
      * @param Request $request
      *
@@ -1546,7 +1542,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/robots-txt", name="pimcore_admin_settings_robotstxtget", methods={"GET"})
+     * @Route("/robots-txt", methods={"GET"})
      *
      * @return JsonResponse
      */
@@ -1560,12 +1556,12 @@ class SettingsController extends AdminController
         return $this->adminJson([
             'success' => true,
             'data' => $config,
-            'onFileSystem' => file_exists(PIMCORE_WEB_ROOT . '/robots.txt'),
+            'onFileSystem' => file_exists(PIMCORE_WEB_ROOT . '/robots.txt')
         ]);
     }
 
     /**
-     * @Route("/robots-txt", name="pimcore_admin_settings_robotstxtput", methods={"PUT"})
+     * @Route("/robots-txt", methods={"PUT"})
      *
      * @param Request $request
      *
@@ -1586,12 +1582,12 @@ class SettingsController extends AdminController
         );
 
         return $this->adminJson([
-            'success' => true,
+            'success' => true
         ]);
     }
 
     /**
-     * @Route("/tag-management-tree", name="pimcore_admin_settings_tagmanagementtree", methods={"GET", "POST"})
+     * @Route("/tag-management-tree", methods={"GET", "POST"})
      *
      * @param Request $request
      *
@@ -1609,7 +1605,7 @@ class SettingsController extends AdminController
         foreach ($items as $item) {
             $tags[] = [
                 'id' => $item->getName(),
-                'text' => $item->getName(),
+                'text' => $item->getName()
             ];
         }
 
@@ -1617,7 +1613,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/tag-management-add", name="pimcore_admin_settings_tagmanagementadd", methods={"POST"})
+     * @Route("/tag-management-add", methods={"POST"})
      *
      * @param Request $request
      *
@@ -1643,7 +1639,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/tag-management-delete", name="pimcore_admin_settings_tagmanagementdelete", methods={"DELETE"})
+     * @Route("/tag-management-delete", methods={"DELETE"})
      *
      * @param Request $request
      *
@@ -1660,7 +1656,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/tag-management-get", name="pimcore_admin_settings_tagmanagementget", methods={"GET"})
+     * @Route("/tag-management-get", methods={"GET"})
      *
      * @param Request $request
      *
@@ -1676,7 +1672,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/tag-management-update", name="pimcore_admin_settings_tagmanagementupdate", methods={"PUT"})
+     * @Route("/tag-management-update", methods={"PUT"})
      *
      * @param Request $request
      *
@@ -1727,7 +1723,7 @@ class SettingsController extends AdminController
         for ($i = 0; $i < 5; $i++) {
             $params[] = [
                 'name' => $data['params.name' . $i],
-                'value' => $data['params.value' . $i],
+                'value' => $data['params.value' . $i]
             ];
         }
         $tag->setParams($params);
@@ -1744,7 +1740,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/website-settings", name="pimcore_admin_settings_websitesettings", methods={"POST"})
+     * @Route("/website-settings", methods={"POST"})
      *
      * @param Request $request
      *
@@ -1880,7 +1876,7 @@ class SettingsController extends AdminController
             'data' => null,
             'siteId' => $item->getSiteId(),
             'creationDate' => $item->getCreationDate(),
-            'modificationDate' => $item->getModificationDate(),
+            'modificationDate' => $item->getModificationDate()
         ];
 
         switch ($item->getType()) {
@@ -1901,7 +1897,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/get-available-algorithms", name="pimcore_admin_settings_getavailablealgorithms", methods={"GET"})
+     * @Route("/get-available-algorithms", methods={"GET"})
      *
      * @param Request $request
      *
@@ -1913,14 +1909,14 @@ class SettingsController extends AdminController
             [
                 'key' => 'password_hash',
                 'value' => 'password_hash',
-            ],
+            ]
         ];
 
         $algorithms = hash_algos();
         foreach ($algorithms as $algorithm) {
             $options[] = [
                 'key' => $algorithm,
-                'value' => $algorithm,
+                'value' => $algorithm
             ];
         }
 
@@ -1951,7 +1947,7 @@ class SettingsController extends AdminController
     }
 
     /**
-     * @Route("/test-web2print", name="pimcore_admin_settings_testweb2print", methods={"GET"})
+     * @Route("/test-web2print", methods={"GET"})
      *
      * @param Request $request
      *

@@ -16,9 +16,9 @@ pimcore.object.classes.klass = Class.create({
 
     allowedInType: 'object',
     disallowedDataTypes: [],
+    uploadUrl: '/admin/class/import-class',
+    exportUrl: "/admin/class/export-class",
     context: "class",
-    uploadRoute: 'pimcore_admin_dataobject_class_importclass',
-    exportRoute: 'pimcore_admin_dataobject_class_exportclass',
 
     initialize: function (data, parentPanel, reopen, editorPrefix) {
         this.parentPanel = parentPanel;
@@ -32,11 +32,11 @@ pimcore.object.classes.klass = Class.create({
     },
 
     getUploadUrl: function(){
-        return Routing.generate(this.uploadRoute, {id: this.getId()});
+        return this.uploadUrl + '?id=' + this.getId();
     },
 
     getExportUrl: function() {
-        return Routing.generate(this.exportRoute, {id: this.getId()});
+        return  this.exportUrl + "?id=" + this.getId();
     },
 
 
@@ -159,7 +159,7 @@ pimcore.object.classes.klass = Class.create({
 
         pimcore.helpers.uploadDialog(this.getUploadUrl(), "Filedata", function() {
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_dataobject_class_get'),
+                url: "/admin/class/get",
                 params: {
                     id: this.data.id
                 },
@@ -691,7 +691,7 @@ pimcore.object.classes.klass = Class.create({
 
         var iconStore = new Ext.data.ArrayStore({
             proxy: {
-                url: Routing.generate('pimcore_admin_dataobject_class_geticons'),
+                url: '/admin/class/get-icons',
                 type: 'ajax',
                 reader: {
                     type: 'json'
@@ -869,7 +869,7 @@ pimcore.object.classes.klass = Class.create({
                             iconCls: "pimcore_icon_icons",
                             text: t('icon_library'),
                             handler: function () {
-                                pimcore.helpers.openGenericIframeWindow("icon-library", Routing.generate('pimcore_admin_misc_iconlist'), "pimcore_icon_icons", t("icon_library"));
+                                pimcore.helpers.openGenericIframeWindow("icon-library", "/admin/misc/icon-list", "pimcore_icon_icons", t("icon_library"));
                             }
                         }
                     ]
@@ -889,12 +889,6 @@ pimcore.object.classes.klass = Class.create({
                     fieldLabel: t("show_applogger_tab"),
                     name: "showAppLoggerTab",
                     checked: this.data.showAppLoggerTab
-                },
-                {
-                    xtype: "checkbox",
-                    fieldLabel: t("show_fieldlookup"),
-                    name: "showFieldLookup",
-                    checked: this.data.showFieldLookup
                 },
                 {
                     xtype: "checkbox",
@@ -1112,7 +1106,7 @@ pimcore.object.classes.klass = Class.create({
     getBricksGrid: function() {
         this.usagesStore = new Ext.data.ArrayStore({
             proxy: {
-                url: Routing.generate('pimcore_admin_dataobject_class_getbrickusages'),
+                url: '/admin/class/get-bricks-usages',
                 type: 'ajax',
                 reader: {
                     type: 'json'
@@ -1434,7 +1428,7 @@ pimcore.object.classes.klass = Class.create({
 
             if (this.getDataSuccess) {
                 Ext.Ajax.request({
-                    url: Routing.generate('pimcore_admin_dataobject_class_save'),
+                    url: "/admin/class/save",
                     method: "PUT",
                     params: {
                         configuration: m,

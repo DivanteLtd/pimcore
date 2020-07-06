@@ -48,8 +48,6 @@ class Area extends Model\Document\Tag
 
     /**
      * @see Model\Document\Tag\TagInterface::admin
-     *
-     * @return void
      */
     public function admin()
     {
@@ -68,8 +66,6 @@ class Area extends Model\Document\Tag
 
     /**
      * @see Model\Document\Tag\TagInterface::frontend
-     *
-     * @return void
      */
     public function frontend()
     {

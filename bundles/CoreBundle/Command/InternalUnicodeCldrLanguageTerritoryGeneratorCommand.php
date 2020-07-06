@@ -16,21 +16,11 @@ namespace Pimcore\Bundle\CoreBundle\Command;
 
 use Pimcore\Console\AbstractCommand;
 use Pimcore\File;
-use Pimcore\Localization\LocaleServiceInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class InternalUnicodeCldrLanguageTerritoryGeneratorCommand extends AbstractCommand
 {
-    /** @var LocaleServiceInterface */
-    private $localeService;
-
-    public function __construct(LocaleServiceInterface $localeService)
-    {
-        $this->localeService = $localeService;
-        parent::__construct();
-    }
-
     protected function configure()
     {
         $this
@@ -44,7 +34,7 @@ class InternalUnicodeCldrLanguageTerritoryGeneratorCommand extends AbstractComma
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $source = 'https://raw.githubusercontent.com/unicode-org/cldr/master/common/supplemental/supplementalData.xml';
+        $source = 'http://unicode.org/repos/cldr/trunk/common/supplemental/supplementalData.xml';
         $data = file_get_contents($source);
         $xml = simplexml_load_string($data, null, LIBXML_NOCDATA);
 
@@ -53,17 +43,17 @@ class InternalUnicodeCldrLanguageTerritoryGeneratorCommand extends AbstractComma
         foreach ($xml->territoryInfo->territory as $territory) {
             foreach ($territory->languagePopulation as $language) {
                 $languageCode = (string) $language['type'];
-                if ($this->localeService->isLocale($languageCode)) {
+                if (\Pimcore::getContainer()->get('pimcore.locale')->isLocale($languageCode)) {
                     $populationAbsolute = $territory['population'] * $language['populationPercent'] / 100;
 
                     if (!isset($languageRawData[$languageCode])) {
                         $languageRawData[$languageCode] = [];
                     }
 
-                    if ($this->localeService->isLocale($languageCode . '_' . $territory['type'])) {
+                    if (\Pimcore::getContainer()->get('pimcore.locale')->isLocale($languageCode . '_' . $territory['type'])) {
                         $languageRawData[$languageCode][] = [
                             'country' => (string)$territory['type'],
-                            'population' => $populationAbsolute,
+                            'population' => $populationAbsolute
                         ];
                     }
                 }

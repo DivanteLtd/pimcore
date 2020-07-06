@@ -91,7 +91,7 @@ pimcore.notification.helper.showNotifications = function (notifications) {
 
 pimcore.notification.helper.markAsRead = function (id, callback) {
     Ext.Ajax.request({
-        url: Routing.generate('pimcore_admin_notification_markasread', {id: id}),
+        url: "/admin/notification/mark-as-read?id=" + id,
         success: function (response) {
             if (callback) {
                 callback();
@@ -112,7 +112,7 @@ pimcore.notification.helper.openLinkedElement = function (row) {
 
 pimcore.notification.helper.openDetails = function (id, callback) {
     Ext.Ajax.request({
-        url: Routing.generate('pimcore_admin_notification_find', {id: id}),
+        url: "/admin/notification/find?id=" + id,
         success: function (response) {
             response = Ext.decode(response.responseText);
             if (!response.success) {
@@ -155,7 +155,7 @@ pimcore.notification.helper.openDetailsWindow = function (id, title, message, ty
 
 pimcore.notification.helper.delete = function (id, callback) {
     Ext.Ajax.request({
-        url: Routing.generate('pimcore_admin_notification_delete', {id: id}),
+        url: "/admin/notification/delete?id=" + id,
         success: function (response) {
             if (callback) {
                 callback();
@@ -166,7 +166,7 @@ pimcore.notification.helper.delete = function (id, callback) {
 
 pimcore.notification.helper.deleteAll = function (callback) {
     Ext.Ajax.request({
-        url: Routing.generate('pimcore_admin_notification_deleteall'),
+        url: "/admin/notification/delete-all",
         success: function (response) {
             if (callback) {
                 callback();
@@ -184,7 +184,7 @@ pimcore.notification.helper.updateFromServer = function () {
     var user = pimcore.globalmanager.get("user");
     if (!document.hidden && user.isAllowed("notifications")) {
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_notification_findlastunread'),
+            url: "/admin/notification/find-last-unread",
             params: {
                 lastUpdate: this.lastUpdateTimestamp
             },

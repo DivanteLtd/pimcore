@@ -98,7 +98,7 @@ pimcore.object.classificationstore.relationSelectionWindow = Class.create({
         if (keyIds.length > 0) {
             this.parent.requestPending.call(this.parent);
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_dataobject_classificationstore_relationsactionget'),
+                url: "/admin/classificationstore/relations",
                 params: {
                     relationIds: Ext.util.JSON.encode(keyIds)
                 },
@@ -153,6 +153,7 @@ pimcore.object.classificationstore.relationSelectionWindow = Class.create({
         var formValue = this.searchfield.getValue();
 
         this.store.getProxy().setExtraParam("searchfilter", formValue);
+
 
         var lastOptions = this.store.lastOptions;
         Ext.apply(lastOptions.params, {
@@ -217,37 +218,14 @@ pimcore.object.classificationstore.relationSelectionWindow = Class.create({
 
         var gridColumns = [];
         gridColumns.push({text: "ID", width: 60, sortable: true, dataIndex: 'id'});
+        gridColumns.push({text: t("group"), flex: 1, sortable: true, dataIndex: 'groupName', filter: 'string'});
+        gridColumns.push({text: t("name"), flex: 1, sortable: true, dataIndex: 'keyName', filter: 'string'});
+        gridColumns.push({text: t("description"), flex: 1, sortable: true, dataIndex: 'keyDescription', filter: 'string'});
 
-        gridColumns.push({
-            text: t("group"),
-            flex: 1,
-            sortable: true,
-            dataIndex: 'groupName',
-            filter: 'string',
-            renderer: pimcore.helpers.grid.getTranslationColumnRenderer.bind(this)
-        });
-
-        gridColumns.push({
-            text: t("name"),
-            flex: 1,
-            sortable: true,
-            dataIndex: 'keyName',
-            filter: 'string',
-            renderer: pimcore.helpers.grid.getTranslationColumnRenderer.bind(this)
-        });
-
-        gridColumns.push({
-            text: t("description"),
-            flex: 1,
-            sortable: true,
-            dataIndex: 'keyDescription',
-            filter: 'string',
-            renderer: pimcore.helpers.grid.getTranslationColumnRenderer.bind(this)
-        });
 
         var proxy = {
             type: 'ajax',
-            url: Routing.generate('pimcore_admin_dataobject_classificationstore_searchrelations'),
+            url: "/admin/classificationstore/search-relations",
             reader: {
                 type: 'json',
                 rootProperty: 'data',

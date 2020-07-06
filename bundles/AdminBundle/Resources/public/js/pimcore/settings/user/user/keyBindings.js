@@ -157,7 +157,7 @@ pimcore.settings.user.user.keyBindings = Class.create({
             iconCls : "pimcore_icon_restore",
             handler: function() {
                 Ext.Ajax.request({
-                    url: Routing.generate('pimcore_admin_user_getdefaultkeybindings'),
+                    url: "/admin/user/get-default-key-bindings",
                     success: function (response) {
                         var rdata = Ext.decode(response.responseText);
                         if (rdata && rdata.success) {

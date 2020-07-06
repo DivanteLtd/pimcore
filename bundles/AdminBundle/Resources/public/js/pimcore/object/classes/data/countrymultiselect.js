@@ -60,7 +60,7 @@ pimcore.object.classes.data.countrymultiselect = Class.create(pimcore.object.cla
 
         var countryProxy = {
             type: 'ajax',
-            url: Routing.generate('pimcore_admin_settings_getavailablecountries'),
+            url: '/admin/settings/get-available-countries',
             reader: {
                 type: 'json',
                 rootProperty: 'data'

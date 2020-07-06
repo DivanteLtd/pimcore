@@ -90,7 +90,7 @@ class Snippet extends Model\Document\Tag
         if ($this->snippet instanceof Document\Snippet) {
             return [
                 'id' => $this->id,
-                'path' => $this->snippet->getFullPath(),
+                'path' => $this->snippet->getFullPath()
             ];
         }
 
@@ -130,8 +130,7 @@ class Snippet extends Model\Document\Tag
 
         // check if output-cache is enabled, if so, we're also using the cache here
         $cacheKey = null;
-        $cacheConfig = \Pimcore\Tool\Frontend::isOutputCacheEnabled();
-        if ((isset($params['cache']) && $params['cache'] === true) || $cacheConfig) {
+        if ($cacheConfig = \Pimcore\Tool\Frontend::isOutputCacheEnabled()) {
 
             // cleanup params to avoid serializing Element\ElementInterface objects
             $cacheParams = $params;
@@ -167,9 +166,7 @@ class Snippet extends Model\Document\Tag
         );
 
         // write contents to the cache, if output-cache is enabled
-        if (isset($params['cache']) && $params['cache'] === true) {
-            Cache::save($content, $cacheKey, ['output']);
-        } elseif ($cacheConfig && !DeviceDetector::getInstance()->wasUsed()) {
+        if ($cacheConfig && !DeviceDetector::getInstance()->wasUsed()) {
             Cache::save($content, $cacheKey, ['output', 'output_inline'], $cacheConfig['lifetime']);
         }
 
@@ -236,7 +233,7 @@ class Snippet extends Model\Document\Tag
 
             $dependencies[$key] = [
                 'id' => $this->snippet->getId(),
-                'type' => 'document',
+                'type' => 'document'
             ];
         }
 

@@ -17,16 +17,7 @@ pimcore.registerNS("pimcore.helpers.quantityValue.x");
 pimcore.helpers.quantityValue.storeLoaded = false;
 pimcore.helpers.quantityValue.store = null;
 
-pimcore.helpers.quantityValue.initUnitStore = function(callback, filters, data) {
-    if (data && data.unit && pimcore.helpers.quantityValue.storeLoaded) {
-        let rec = pimcore.helpers.quantityValue.store.getById(data.unit);
-        if (rec == null) {
-            pimcore.helpers.quantityValue.storeLoaded = false;
-            pimcore.helpers.quantityValue.store = null;
-        }
-    }
-
-
+pimcore.helpers.quantityValue.initUnitStore = function(callback, filters) {
     if (!pimcore.helpers.quantityValue.storeLoaded) {
         var newListener = function () {
             pimcore.helpers.quantityValue.storeLoaded = true;
@@ -39,7 +30,7 @@ pimcore.helpers.quantityValue.initUnitStore = function(callback, filters, data) 
                 autoLoad: true,
                 proxy: {
                     type: 'ajax',
-                    url: Routing.generate('pimcore_admin_dataobject_quantityvalue_unitlist'),
+                    url: '/admin/quantity-value/unit-list',
                     reader: {
                         type: 'json',
                         rootProperty: 'data'
@@ -89,7 +80,7 @@ pimcore.helpers.quantityValue.getClassDefinitionStore = function() {
             autoLoad: true,
             proxy: {
                 type: 'ajax',
-                url: Routing.generate('pimcore_admin_dataobject_quantityvalue_unitlist'),
+                url: '/admin/quantity-value/unit-list',
                 reader: {
                     type: 'json',
                     rootProperty: 'data'

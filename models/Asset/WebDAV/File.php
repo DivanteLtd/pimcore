@@ -87,7 +87,7 @@ class File extends DAV\File
             $log[$this->asset->getRealFullPath()] = [
                 'id' => $this->asset->getId(),
                 'timestamp' => time(),
-                'data' => \Pimcore\Tool\Serialize::serialize($this->asset),
+                'data' => \Pimcore\Tool\Serialize::serialize($this->asset)
             ];
 
             $this->asset->setInDumpState(false);
@@ -111,8 +111,6 @@ class File extends DAV\File
      *
      * @throws DAV\Exception\Forbidden
      * @throws \Exception
-     *
-     * @return null
      */
     public function put($data)
     {
@@ -130,11 +128,9 @@ class File extends DAV\File
 
             fclose($file);
             unlink($tmpFile);
-
-            return null;
+        } else {
+            throw new DAV\Exception\Forbidden();
         }
-
-        throw new DAV\Exception\Forbidden();
     }
 
     /**

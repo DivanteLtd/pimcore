@@ -76,18 +76,6 @@ class Dao extends Model\Dao\AbstractDao
                 $collection->setObject($object);
 
                 foreach ($fieldDefinitions as $key => $fd) {
-                    $params = [
-                        'context' => [
-                            'object' => $object,
-                            'containerType' => 'fieldcollection',
-                            'containerKey' => $type,
-                            'fieldname' => $this->model->getFieldname(),
-                            'index' => $result['index'],
-                        ],
-                        'owner' => $collection,
-                        'fieldname' => $key,
-                    ];
-
                     if ($fd instanceof CustomResourcePersistingInterface) {
                         $doLoad = true;
                         if ($fd instanceof LazyLoadingSupportInterface) {
@@ -100,7 +88,14 @@ class Dao extends Model\Dao\AbstractDao
                             // datafield has it's own loader
                             $value = $fd->load(
                                 $collection,
-                                $params
+                                [
+                                    'context' => [
+                                        'object' => $object,
+                                        'containerType' => 'fieldcollection',
+                                        'containerKey' => $type,
+                                        'fieldname' => $this->model->getFieldname(),
+                                        'index' => $result['index']
+                                    ]]
                             );
 
                             if ($value === 0 || !empty($value)) {
@@ -118,9 +113,9 @@ class Dao extends Model\Dao\AbstractDao
                             foreach ($fd->getColumnType() as $fkey => $fvalue) {
                                 $multidata[$key . '__' . $fkey] = $result[$key . '__' . $fkey];
                             }
-                            $collection->setValue($key, $fd->getDataFromResource($multidata, $object, $params));
+                            $collection->setValue($key, $fd->getDataFromResource($multidata));
                         } else {
-                            $collection->setValue($key, $fd->getDataFromResource($result[$key], $object, $params));
+                            $collection->setValue($key, $fd->getDataFromResource($result[$key]));
                         }
                     }
                 }
@@ -169,7 +164,7 @@ class Dao extends Model\Dao\AbstractDao
             try {
                 $this->db->delete($tableName, [
                     'o_id' => $object->getId(),
-                    'fieldname' => $this->model->getFieldname(),
+                    'fieldname' => $this->model->getFieldname()
                 ]);
             } catch (\Exception $e) {
                 // create definition if it does not exist
@@ -182,7 +177,7 @@ class Dao extends Model\Dao\AbstractDao
                 try {
                     $this->db->delete($tableName, [
                         'ooo_id' => $object->getId(),
-                        'fieldname' => $this->model->getFieldname(),
+                        'fieldname' => $this->model->getFieldname()
                     ]);
                 } catch (\Exception $e) {
                     Logger::error($e);
@@ -209,8 +204,8 @@ class Dao extends Model\Dao\AbstractDao
                                 'context' => [
                                     'containerType' => 'fieldcollection',
                                     'containerKey' => $type,
-                                    'fieldname' => $this->model->getFieldname(),
-                                ],
+                                    'fieldname' => $this->model->getFieldname()
+                                ]
                             ]
                         );
                     }
@@ -218,22 +213,9 @@ class Dao extends Model\Dao\AbstractDao
             }
         }
 
-        $isDirty = $this->model->isFieldDirty('_self');
-        if (!$isDirty) {
-            if ($items = $this->model->getItems()) {
-                /** @var Model\Element\DirtyIndicatorInterface $item */
-                foreach ($items as $item) {
-                    if ($item->hasDirtyFields()) {
-                        $this->model->markFieldDirty('_self');
-                        break;
-                    }
-                }
-            }
-        }
         if (!$this->model->isFieldDirty('_self') && !DataObject\AbstractObject::isDirtyDetectionDisabled()) {
             return [];
         }
-
         $whereLocalizedFields = "(ownertype = 'localizedfield' AND "
             . $this->db->quoteInto('ownername LIKE ?', '/fieldcollection~'
                 . $this->model->getFieldname() . '/%')

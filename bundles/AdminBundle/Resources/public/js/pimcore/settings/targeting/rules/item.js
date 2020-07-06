@@ -303,7 +303,7 @@ pimcore.settings.targeting.rules.item = Class.create({
         };
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_targeting_rulesave'),
+            url: "/admin/targeting/rule/save",
             method: 'PUT',
             params: {
                 id: this.data.id,

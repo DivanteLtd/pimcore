@@ -104,7 +104,8 @@ class Bootstrap
 
     public static function setProjectRoot()
     {
-        // this should already be defined at this point, but we include a fallback for backwards compatibility here
+        // this should already be defined at this point, but we include a fallback here
+        // fot backwards compatibility
         if (!defined('PIMCORE_PROJECT_ROOT')) {
             define(
                 'PIMCORE_PROJECT_ROOT',

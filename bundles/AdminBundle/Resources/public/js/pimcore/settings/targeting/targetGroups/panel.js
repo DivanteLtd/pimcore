@@ -15,7 +15,7 @@ pimcore.registerNS("pimcore.settings.targeting.targetGroups.panel");
 pimcore.settings.targeting.targetGroups.panel= Class.create({
 
     initialize: function() {
-        this.treeDataUrl = Routing.generate('pimcore_admin_targeting_targetgrouplist');
+        this.treeDataUrl = '/admin/targeting/target-group/list';
     },
 
     getLayout: function () {
@@ -133,7 +133,7 @@ pimcore.settings.targeting.targetGroups.panel= Class.create({
 
         if (button == "ok" && value.length > 2) {
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_targeting_targetgroupadd'),
+                url: "/admin/targeting/target-group/add",
                 method: 'POST',
                 params: {
                     name: value
@@ -162,7 +162,7 @@ pimcore.settings.targeting.targetGroups.panel= Class.create({
 
     deleteTargetGroup: function (tree, record) {
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_targeting_targetgroupdelete'),
+            url: "/admin/targeting/target-group/delete",
             method: 'DELETE',
             params: {
                 id: record.data.id
@@ -189,7 +189,7 @@ pimcore.settings.targeting.targetGroups.panel= Class.create({
         }
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_targeting_targetgroupget'),
+            url: "/admin/targeting/target-group/get",
             params: {
                 id: node
             },

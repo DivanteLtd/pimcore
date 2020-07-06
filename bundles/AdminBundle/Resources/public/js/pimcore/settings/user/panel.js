@@ -48,7 +48,7 @@ pimcore.settings.user.panel = Class.create(pimcore.settings.user.panels.abstract
             var store = Ext.create('Ext.data.TreeStore', {
                 proxy: {
                     type: 'ajax',
-                    url: Routing.generate('pimcore_admin_user_treegetchildsbyid')
+                    url: '/admin/user/tree-get-childs-by-id'
                 }
             });
 
@@ -102,7 +102,7 @@ pimcore.settings.user.panel = Class.create(pimcore.settings.user.panels.abstract
         var store = new Ext.data.Store({
             proxy: {
                 type: 'ajax',
-                url: Routing.generate('pimcore_admin_user_search'),
+                url: '/admin/user/search',
                 reader: {
                     type: 'json',
                     rootProperty: 'users'
@@ -113,7 +113,7 @@ pimcore.settings.user.panel = Class.create(pimcore.settings.user.panels.abstract
 
         var resultTpl = new Ext.XTemplate(
             '<tpl for="."><div class="x-boundlist-item" style="font-size: 11px;line-height: 15px;padding: 3px 10px 3px 10px; border: 1px solid #fff; border-bottom: 1px solid #eeeeee; color: #555;">',
-            '<img style="float:left; padding-right: 10px; max-height:30px;" src="'+Routing.generate('pimcore_admin_user_getimage')+'?id={id}" />',
+            '<img style="float:left; padding-right: 10px; max-height:30px;" src="/admin/user/get-image?id={id}" />',
             '<h3 style="font-size: 13px;line-height: 16px;margin: 0;">{name} - {firstname} {lastname}</h3>',
             '{email} <b>ID: </b> {id}',
             '</div></tpl>'
@@ -270,7 +270,7 @@ pimcore.settings.user.panel = Class.create(pimcore.settings.user.panels.abstract
     update: function (userId, values) {
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_user_update'),
+            url: "/admin/user/update",
             method: "PUT",
             params: {
                 id: userId,

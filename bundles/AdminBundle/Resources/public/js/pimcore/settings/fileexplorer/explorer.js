@@ -45,7 +45,7 @@ pimcore.settings.fileexplorer.explorer = Class.create({
             var store = Ext.create('Ext.data.TreeStore', {
                 proxy: {
                     type: 'ajax',
-                    url: Routing.generate('pimcore_admin_misc_fileexplorertree')
+                    url: '/admin/misc/fileexplorer-tree'
                 },
                 folderSort: true,
                 sorters: [{
@@ -141,7 +141,7 @@ pimcore.settings.fileexplorer.explorer = Class.create({
         Ext.MessageBox.prompt(t('new_file'), t('enter_the_name_of_the_new_item'),
             function (node, button, value) {
                 Ext.Ajax.request({
-                    url: Routing.generate('pimcore_admin_misc_fileexploreradd'),
+                    url: "/admin/misc/fileexplorer-add",
                     method: "POST",
                     success: function (node, response) {
                         node.data.loaded = false;
@@ -166,7 +166,7 @@ pimcore.settings.fileexplorer.explorer = Class.create({
         Ext.MessageBox.prompt(t('new_folder'), t('enter_the_name_of_the_new_item'),
             function (node, button, value) {
                 Ext.Ajax.request({
-                    url: Routing.generate('pimcore_admin_misc_fileexploreraddfolder'),
+                    url: "/admin/misc/fileexplorer-add-folder",
                     method: "POST",
                     success: function (node, response) {
                         node.data.loaded = false;
@@ -193,7 +193,7 @@ pimcore.settings.fileexplorer.explorer = Class.create({
             function (node, button, value) {
                 if (button == "ok") {
                     Ext.Ajax.request({
-                        url: Routing.generate('pimcore_admin_misc_fileexplorerrename'),
+                        url: "/admin/misc/fileexplorer-rename",
                         method: 'PUT',
                         success: function (node, response) {
                             if (this.openfiles[node.id]) {
@@ -223,7 +223,7 @@ pimcore.settings.fileexplorer.explorer = Class.create({
     deleteFile: function (node) {
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_misc_fileexplorerdelete'),
+            url: "/admin/misc/fileexplorer-delete",
             method: 'DELETE',
             success: function (node, response) {
                 this.treePanel.getStore().load({

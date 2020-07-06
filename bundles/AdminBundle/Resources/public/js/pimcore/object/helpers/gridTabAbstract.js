@@ -15,17 +15,10 @@ pimcore.registerNS("pimcore.object.helpers.gridTabAbstract");
 pimcore.object.helpers.gridTabAbstract = Class.create({
 
     objecttype: 'object',
-    batchPrepareUrl: null,
-    batchProcessUrl: null,
-    exportPrepareUrl: null,
-    exportProcessUrl: null,
-
-    initialize: function() {
-        this.batchPrepareUrl = Routing.generate('pimcore_admin_dataobject_dataobjecthelper_getbatchjobs');
-        this.batchProcessUrl = Routing.generate('pimcore_admin_dataobject_dataobjecthelper_batch');
-        this.exportPrepareUrl = Routing.generate('pimcore_admin_dataobject_dataobjecthelper_getexportjobs');
-        this.exportProcessUrl = Routing.generate('pimcore_admin_dataobject_dataobjecthelper_doexport');
-    },
+    batchPrepareUrl: "/admin/object-helper/get-batch-jobs",
+    batchProcessUrl: "/admin/object-helper/batch",
+    exportPrepareUrl: "/admin/object-helper/get-export-jobs",
+    exportProcessUrl: "/admin/object-helper/do-export",
 
     openColumnConfig: function (allowPreview) {
         var gridConfig = this.getGridConfig();
@@ -55,7 +48,7 @@ pimcore.object.helpers.gridTabAbstract = Class.create({
                     fc.attributes = field.fieldConfig.attributes;
 
                 }
-
+                
                 visibleColumns.push(fc);
             }
         }
@@ -81,7 +74,7 @@ pimcore.object.helpers.gridTabAbstract = Class.create({
             }.bind(this),
             function () {
                 Ext.Ajax.request({
-                    url: Routing.generate('pimcore_admin_dataobject_dataobjecthelper_gridgetcolumnconfig'),
+                    url: "/admin/object-helper/grid-get-column-config",
                     params: {
                         id: this.classId,
                         objectId: objectId,

@@ -57,7 +57,7 @@ pimcore.settings.website = Class.create({
 
 
         var itemsPerPage = pimcore.helpers.grid.getDefaultPageSize();
-        var url = Routing.generate('pimcore_admin_settings_websitesettings');
+        var url = '/admin/settings/website-settings?';
 
         this.store = pimcore.helpers.grid.buildDefaultStore(
             url, ["id", 'name','type', "data", 'siteId', 'creationDate', 'modificationDate'],
@@ -451,7 +451,7 @@ pimcore.settings.website = Class.create({
             }
         }
 
-        return Ext.util.Format.htmlEncode(value);
+        return value;
     },
 
     cellMousedown: function (grid, cell, rowIndex, cellIndex, e) {

@@ -15,7 +15,7 @@ pimcore.registerNS("pimcore.settings.targeting.rules.panel");
 pimcore.settings.targeting.rules.panel= Class.create({
 
     initialize: function() {
-        this.treeDataUrl = Routing.generate('pimcore_admin_targeting_rulelist');
+        this.treeDataUrl = '/admin/targeting/rule/list';
     },
 
 
@@ -60,7 +60,7 @@ pimcore.settings.targeting.rules.panel= Class.create({
 
                     // save order
                     Ext.Ajax.request({
-                        url: Routing.generate('pimcore_admin_targeting_ruleorder'),
+                        url: "/admin/targeting/rule/order",
                         params: {
                             rules: Ext.encode(rules)
                         },
@@ -159,7 +159,7 @@ pimcore.settings.targeting.rules.panel= Class.create({
         var regresult = value.match(/[a-zA-Z0-9_\-]+/);
         if (button == "ok" && value.length > 2 && regresult == value) {
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_targeting_ruleadd'),
+                url: "/admin/targeting/rule/add",
                 method: 'POST',
                 params: {
                     name: value
@@ -193,7 +193,7 @@ pimcore.settings.targeting.rules.panel= Class.create({
 
     deleteTarget: function (tree, record) {
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_targeting_ruledelete'),
+            url: "/admin/targeting/rule/delete",
             method: 'DELETE',
             params: {
                 id: record.data.id
@@ -233,7 +233,7 @@ pimcore.settings.targeting.rules.panel= Class.create({
         }
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_targeting_ruleget'),
+            url: "/admin/targeting/rule/get",
             params: {
                 id: node
             },

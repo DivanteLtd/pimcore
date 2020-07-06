@@ -167,7 +167,7 @@ pimcore.settings.user.workspace.special = Class.create({
     onLayoutsClicked: function() {
         if (!this.allLayouts) {
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_dataobject_class_getalllayouts'),
+                url: "/admin/class/get-all-layouts",
                 success: this.layoutsReceived.bind(this)
             });
         } else {

@@ -32,37 +32,7 @@ class LinkController extends DocumentControllerBase
     use ElementEditLockHelperTrait;
 
     /**
-     * @Route("/save-to-session", name="pimcore_admin_document_link_savetosession", methods={"POST"})
-     *
-     * {@inheritDoc}
-     */
-    public function saveToSessionAction(Request $request)
-    {
-        return parent::saveToSessionAction($request);
-    }
-
-    /**
-     * @Route("/remove-from-session", name="pimcore_admin_document_link_removefromsession", methods={"DELETE"})
-     *
-     * {@inheritDoc}
-     */
-    public function removeFromSessionAction(Request $request)
-    {
-        return parent::removeFromSessionAction($request);
-    }
-
-    /**
-     * @Route("/change-master-document", name="pimcore_admin_document_link_changemasterdocument", methods={"PUT"})
-     *
-     * {@inheritDoc}
-     */
-    public function changeMasterDocumentAction(Request $request)
-    {
-        return parent::changeMasterDocumentAction($request);
-    }
-
-    /**
-     * @Route("/get-data-by-id", name="pimcore_admin_document_link_getdatabyid", methods={"GET"})
+     * @Route("/get-data-by-id", methods={"GET"})
      *
      * @param Request $request
      *
@@ -110,7 +80,7 @@ class LinkController extends DocumentControllerBase
     }
 
     /**
-     * @Route("/save", name="pimcore_admin_document_link_save", methods={"POST", "PUT"})
+     * @Route("/save", methods={"POST", "PUT"})
      *
      * @param Request $request
      *
@@ -152,9 +122,9 @@ class LinkController extends DocumentControllerBase
                 'success' => true,
                 'data' => [
                     'versionDate' => $link->getModificationDate(),
-                    'versionCount' => $link->getVersionCount(),
+                    'versionCount' => $link->getVersionCount()
                 ],
-                'treeData' => $treeData,
+                'treeData' => $treeData
             ]);
         } else {
             throw $this->createAccessDeniedHttpException();

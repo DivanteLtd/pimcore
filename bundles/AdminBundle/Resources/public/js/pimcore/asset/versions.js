@@ -54,7 +54,7 @@ pimcore.asset.versions = Class.create({
                     }],
                 proxy: {
                     type: 'ajax',
-                    url: Routing.generate('pimcore_admin_element_getversions'),
+                    url: "/admin/element/get-versions",
                     extraParams: {
                         id: this.asset.id,
                         elementType: "asset"
@@ -153,7 +153,7 @@ pimcore.asset.versions = Class.create({
         var data = grid.getStore().getAt(rowIndex).data;
 
         var versionId = data.id;
-        var url = Routing.generate('pimcore_admin_asset_showversion', {id: versionId});
+        var url = "/admin/asset/show-version?id=" + versionId;
         Ext.get(this.frameId).dom.src = url;
     },
 
@@ -191,7 +191,7 @@ pimcore.asset.versions = Class.create({
         var versionId = data.id;
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_element_deleteversion'),
+            url: "/admin/element/delete-version",
             method: 'DELETE',
             params: {id: versionId}
         });
@@ -207,13 +207,13 @@ pimcore.asset.versions = Class.create({
             Ext.Msg.confirm(t('clear_all'), t('clear_version_message'), function(btn){
                 if (btn == 'yes'){
                     var modificationDate = this.asset.data.modificationDate;
-
+                    
                     Ext.Ajax.request({
-                        url: Routing.generate('pimcore_admin_element_deleteallversion'),
+                        url: "/admin/element/delete-all-versions",
                         method: 'DELETE',
                         params: {id: elememntId, date: modificationDate}
                     });
-
+                    
                     //get sub collection of versions for removel. Keep current version
                     var removeCollection = grid.getStore().getData().createFiltered(function(item){
                         return item.get('date') != modificationDate;
@@ -230,7 +230,7 @@ pimcore.asset.versions = Class.create({
         var versionId = data.id;
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_asset_publishversion'),
+            url: "/admin/asset/publish-version",
             method: 'post',
             params: {id: versionId},
             success: function(response) {
@@ -254,7 +254,7 @@ pimcore.asset.versions = Class.create({
 
         if (operation == "edit") {
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_element_versionupdate'),
+                url: "/admin/element/version-update",
                 method: 'PUT',
                 params: {
                     data: Ext.encode(record.data)

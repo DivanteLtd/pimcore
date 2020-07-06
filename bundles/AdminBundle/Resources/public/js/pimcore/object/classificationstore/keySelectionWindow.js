@@ -126,7 +126,7 @@ pimcore.object.classificationstore.keySelectionWindow = Class.create({
         if (collectionIds.length > 0) {
             this.config.parent.requestPending.call(this.config.parent);
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_dataobject_classificationstore_addcollections'),
+                url: "/admin/classificationstore/add-collections",
                 method: 'POST',
                 params: {
                     collectionIds: Ext.util.JSON.encode(collectionIds),
@@ -169,7 +169,7 @@ pimcore.object.classificationstore.keySelectionWindow = Class.create({
         if (groupIds.length > 0) {
             this.config.parent.requestPending.call(this.config.parent);
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_dataobject_classificationstore_addgroups'),
+                url: "/admin/classificationstore/add-groups",
                 method: 'POST',
                 params: {
                     groupIds: Ext.util.JSON.encode(groupIds),
@@ -198,7 +198,7 @@ pimcore.object.classificationstore.keySelectionWindow = Class.create({
         if (keyIds.length > 0) {
             this.config.parent.requestPending.call(this.config.parent);
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_dataobject_classificationstore_propertiesget'),
+                url: "/admin/classificationstore/properties",
                 params: {
                     keyIds: Ext.util.JSON.encode(keyIds)
                 },
@@ -316,7 +316,7 @@ pimcore.object.classificationstore.keySelectionWindow = Class.create({
         }
     },
 
-    setupSearch: function (type, configKey) {
+    setupSearch: function(type, configKey) {
         this.resetToolbarButtons();
         this.toolbarbuttons[type].toggle(true);
 
@@ -369,29 +369,28 @@ pimcore.object.classificationstore.keySelectionWindow = Class.create({
 
     getGridPanel: function () {
         var postFix;
-        var route;
         var nameWidth = 200;
         var descWidth = 590;
 
         if (this.config.isCollectionSearch) {
-            route = 'pimcore_admin_dataobject_classificationstore_collectionsactionget';
+            postFix = "collections";
             this.groupFields = ['id', 'name', 'description'];
         } else if (this.config.isGroupSearch) {
-            route = 'pimcore_admin_dataobject_classificationstore_groupsactionget';
+            postFix = "groups";
             this.groupFields = ['id', 'name', 'description'];
         } else if (this.config.isGroupsBySearch) {
             this.groupFields = ['id', 'groupName', 'keyName', 'keyDescription', 'keyId', 'groupId'];
         } else {
-            route = 'pimcore_admin_dataobject_classificationstore_propertiesget';
+            postFix = "properties";
             nameWidth = 150;
             descWidth = 490;
             this.groupFields = ['id', 'groupName', 'name', 'description'];
         }
 
         if (this.config.isGroupByKeySearch) {
-            var url = Routing.generate('pimcore_admin_dataobject_classificationstore_searchrelations');
+            var url = "/admin/classificationstore/search-relations";
         } else {
-            var url = Routing.generate(route);
+            var url = "/admin/classificationstore/" + postFix;
         }
 
         var readerFields = [];
@@ -402,32 +401,14 @@ pimcore.object.classificationstore.keySelectionWindow = Class.create({
         var gridColumns = [];
         if (this.config.isGroupByKeySearch) {
             gridColumns.push({text: "ID", width: 60, sortable: true, dataIndex: 'id'});
-
-            gridColumns.push({
-                text: t("group"),
-                flex: 1,
-                sortable: true,
-                dataIndex: 'groupName',
-                filter: 'string',
-                renderer: pimcore.helpers.grid.getTranslationColumnRenderer.bind(this)
-            });
-
-            gridColumns.push({
-                text: t("name"),
-                flex: 1,
-                sortable: true,
-                dataIndex: 'keyName',
-                filter: 'string',
-                renderer: pimcore.helpers.grid.getTranslationColumnRenderer.bind(this)
-            });
-
+            gridColumns.push({text: t("group"), flex: 1, sortable: true, dataIndex: 'groupName', filter: 'string'});
+            gridColumns.push({text: t("name"), flex: 1, sortable: true, dataIndex: 'keyName', filter: 'string'});
             gridColumns.push({
                 text: t("description"),
                 flex: 1,
                 sortable: true,
                 dataIndex: 'keyDescription',
-                filter: 'string',
-                renderer: pimcore.helpers.grid.getTranslationColumnRenderer.bind(this)
+                filter: 'string'
             });
         } else {
             gridColumns.push({text: "ID", width: 40, sortable: true, dataIndex: 'id'});
@@ -441,21 +422,8 @@ pimcore.object.classificationstore.keySelectionWindow = Class.create({
                 });
             }
 
-            gridColumns.push({
-                text: t("name"),
-                width: nameWidth,
-                sortable: true,
-                dataIndex: 'name',
-                renderer: pimcore.helpers.grid.getTranslationColumnRenderer.bind(this)
-            });
-
-            gridColumns.push({
-                text: t("description"),
-                width: descWidth,
-                sortable: true,
-                dataIndex: 'description',
-                renderer: pimcore.helpers.grid.getTranslationColumnRenderer.bind(this)
-            });
+            gridColumns.push({text: t("name"), width: nameWidth, sortable: true, dataIndex: 'name'});
+            gridColumns.push({text: t("description"), width: descWidth, sortable: true, dataIndex: 'description'});
         }
 
         var extraParams = {

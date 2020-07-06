@@ -143,10 +143,6 @@ class Dao extends Model\DataObject\AbstractObject\Dao
      */
     public function getData()
     {
-        if (empty($this->model->getClass())) {
-            return;
-        }
-
         $data = $this->db->fetchRow('SELECT * FROM object_store_' . $this->model->getClassId() . ' WHERE oo_id = ?', $this->model->getId());
 
         $fieldDefinitions = $this->model->getClass()->getFieldDefinitions(['object' => $this->model]);
@@ -156,10 +152,8 @@ class Dao extends Model\DataObject\AbstractObject\Dao
                     // datafield has it's own loader
                     $params = [
                         'context' => [
-                            'object' => $this->model,
-                        ],
-                        'owner' => $this->model,
-                        'fieldname' => $key,
+                            'object' => $this->model
+                        ]
                     ];
                     $value = $value->load($this->model, $params);
                     if ($value === 0 || !empty($value)) {
@@ -176,9 +170,7 @@ class Dao extends Model\DataObject\AbstractObject\Dao
                     }
                     $this->model->setValue($key, $value->getDataFromResource($multidata));
                 } else {
-                    $this->model->setValue($key, $value->getDataFromResource($data[$key], $this->model,
-                            ['owner' => $this->model,
-                                'fieldname' => $key, ]));
+                    $this->model->setValue($key, $value->getDataFromResource($data[$key], $this->model));
                 }
             }
         }
@@ -243,12 +235,8 @@ class Dao extends Model\DataObject\AbstractObject\Dao
                 $saveParams = ['isUntouchable' => in_array($fd->getName(), $untouchable),
                     'isUpdate' => $isUpdate,
                     'context' => [
-                        'containerType' => 'object',
-                    ],
-                    'owner' => $this->model,
-                    'fieldname' => $key,
-                ]
-                ;
+                        'containerType' => 'object'
+                    ]];
                 if ($this->model instanceof Model\Element\DirtyIndicatorInterface) {
                     $saveParams['newParent'] = $this->model->isFieldDirty('o_parentId');
                 }
@@ -260,8 +248,7 @@ class Dao extends Model\DataObject\AbstractObject\Dao
                     $insertDataArray = $fd->getDataForResource($this->model->$getter(), $this->model,
                         [
                             'isUpdate' => $isUpdate,
-                            'owner' => $this->model,
-                            'fieldname' => $key,
+                            'owner' => $this->model
                         ]);
                     if (is_array($insertDataArray)) {
                         $data = array_merge($data, $insertDataArray);
@@ -270,8 +257,7 @@ class Dao extends Model\DataObject\AbstractObject\Dao
                     $insertData = $fd->getDataForResource($this->model->$getter(), $this->model,
                         [
                             'isUpdate' => $isUpdate,
-                            'owner' => $this->model,
-                            'fieldname' => $key,
+                            'owner' => $this->model
                         ]);
                     $data[$key] = $insertData;
                 }
@@ -309,8 +295,7 @@ class Dao extends Model\DataObject\AbstractObject\Dao
                     $insertData = $fd->getDataForQueryResource($fieldValue, $this->model,
                         [
                             'isUpdate' => $isUpdate,
-                            'owner' => $this->model,
-                            'fieldname' => $key,
+                            'owner' => $this->model
                         ]);
                     $isEmpty = $fd->isEmpty($fieldValue);
 
@@ -403,8 +388,8 @@ class Dao extends Model\DataObject\AbstractObject\Dao
     {
         $this->inheritanceHelper->doUpdate($this->model->getId(), false, [
             'inheritanceRelationContext' => [
-                'ownerType' => 'object',
-            ],
+                'ownerType' => 'object'
+            ]
         ]);
         $this->inheritanceHelper->resetFieldsToCheck();
     }
@@ -419,11 +404,9 @@ class Dao extends Model\DataObject\AbstractObject\Dao
         $this->db->delete('object_relations_' . $this->model->getClassId(), ['src_id' => $this->model->getId()]);
 
         // delete fields which have their own delete algorithm
-        if ($this->model->getClass()) {
-            foreach ($this->model->getClass()->getFieldDefinitions() as $fd) {
-                if ($fd instanceof CustomResourcePersistingInterface) {
-                    $fd->delete($this->model);
-                }
+        foreach ($this->model->getClass()->getFieldDefinitions() as $fd) {
+            if ($fd instanceof CustomResourcePersistingInterface) {
+                $fd->delete($this->model);
             }
         }
 

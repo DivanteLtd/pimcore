@@ -112,7 +112,7 @@ pimcore.document.link = Class.create(pimcore.document.document, {
 
         this.tab.on("beforedestroy", function () {
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_element_unlockelement'),
+                url: "/admin/element/unlock-element",
                 method: 'PUT',
                 params: {
                     id: this.data.id,

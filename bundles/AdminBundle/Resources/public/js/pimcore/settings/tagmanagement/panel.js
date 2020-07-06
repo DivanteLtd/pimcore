@@ -50,7 +50,7 @@ pimcore.settings.tagmanagement.panel = Class.create({
 
         return this.panel;
     },
-
+    
     getTree: function () {
         if (!this.tree) {
             var store = Ext.create('Ext.data.TreeStore', {
@@ -58,7 +58,7 @@ pimcore.settings.tagmanagement.panel = Class.create({
                 autoSync: true,
                 proxy: {
                     type: 'ajax',
-                    url: Routing.generate('pimcore_admin_settings_tagmanagementtree'),
+                    url: "/admin/settings/tag-management-tree",
                     reader: {
                         type: 'json'
                     }
@@ -146,7 +146,7 @@ pimcore.settings.tagmanagement.panel = Class.create({
         }
 
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_settings_tagmanagementget'),
+            url: "/admin/settings/tag-management-get",
             params: {
                 name: id
             },
@@ -192,7 +192,7 @@ pimcore.settings.tagmanagement.panel = Class.create({
             }
 
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_settings_tagmanagementadd'),
+                url: "/admin/settings/tag-management-add",
                 method: 'POST',
                 params: {
                     name: value
@@ -220,7 +220,7 @@ pimcore.settings.tagmanagement.panel = Class.create({
 
     deleteField: function (tree, record) {
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_settings_tagmanagementdelete'),
+            url: "/admin/settings/tag-management-delete",
             method: 'DELETE',
             params: {
                 name: record.data.id

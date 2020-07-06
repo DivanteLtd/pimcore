@@ -48,11 +48,6 @@ class Translator implements LegacyTranslatorInterface, TranslatorInterface, Tran
     protected $adminPath = '';
 
     /**
-     * @var array
-     */
-    protected $adminTranslationMapping = [];
-
-    /**
      * If true, the translator will just return the translation key instead of actually translating
      * the message. Can be useful for debugging and to get an overview over used translation keys on
      * a page.
@@ -96,17 +91,6 @@ class Translator implements LegacyTranslatorInterface, TranslatorInterface, Tran
         }
 
         $id = (string) $id;
-
-        if ($domain === 'admin' && !empty($this->adminTranslationMapping)) {
-            if (null === $locale) {
-                $locale = $this->getLocale();
-            }
-
-            if (array_key_exists($locale, $this->adminTranslationMapping)) {
-                $locale = $this->adminTranslationMapping[$locale];
-            }
-        }
-
         $catalogue = $this->getCatalogue($locale);
         $locale = $catalogue->getLocale();
 
@@ -207,7 +191,7 @@ class Translator implements LegacyTranslatorInterface, TranslatorInterface, Tran
                 if ($domain == 'admin') {
                     $jsonFiles = [
                         $locale . '.json' => 'en.json',
-                        $locale . '.extended.json' => 'en.extended.json',
+                        $locale . '.extended.json' => 'en.extended.json'
                     ];
 
                     foreach ($jsonFiles as $sourceFile => $fallbackFile) {
@@ -381,7 +365,7 @@ class Translator implements LegacyTranslatorInterface, TranslatorInterface, Tran
     {
         $backends = [
             'messages' => 'website',
-            'admin' => 'admin',
+            'admin' => 'admin'
         ];
 
         if (isset($backends[$domain])) {
@@ -405,22 +389,6 @@ class Translator implements LegacyTranslatorInterface, TranslatorInterface, Tran
     public function setAdminPath($adminPath)
     {
         $this->adminPath = $adminPath;
-    }
-
-    /**
-     * @return array
-     */
-    public function getAdminTranslationMapping(): array
-    {
-        return $this->adminTranslationMapping;
-    }
-
-    /**
-     * @param array $adminTranslationMapping
-     */
-    public function setAdminTranslationMapping(array $adminTranslationMapping): void
-    {
-        $this->adminTranslationMapping = $adminTranslationMapping;
     }
 
     /**

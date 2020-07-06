@@ -18,9 +18,7 @@ pimcore.object.variantsTab = Class.create(pimcore.object.helpers.gridTabAbstract
     gridType: 'object',
 
     fieldObject: {},
-    initialize: function ($super, object) {
-        $super();
-
+    initialize: function (object) {
         this.element = object;
         this.searchType = "folder";
         this.noBatchColumns = [];
@@ -55,7 +53,7 @@ pimcore.object.variantsTab = Class.create(pimcore.object.helpers.gridTabAbstract
 
     getTableDescription: function () {
         Ext.Ajax.request({
-            url: Routing.generate('pimcore_admin_dataobject_dataobjecthelper_gridgetcolumnconfig'),
+            url: "/admin/object-helper/grid-get-column-config",
             params: {
                 id: this.classId,
                 objectId:
@@ -108,7 +106,7 @@ pimcore.object.variantsTab = Class.create(pimcore.object.helpers.gridTabAbstract
         var gridHelper = new pimcore.object.helpers.grid(
             this.selectedClass,
             fields,
-            Routing.generate('pimcore_admin_dataobject_variants_getvariants'),
+            "/admin/variants/get-variants",
             baseParams,
             false
         );
@@ -272,7 +270,7 @@ pimcore.object.variantsTab = Class.create(pimcore.object.helpers.gridTabAbstract
     editKey: function (id, button, value) {
         if (button == "ok") {
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_dataobject_variants_updatekey'),
+                url: "/admin/variants/update-key",
                 method: 'PUT',
                 params: {id: id, key: value},
                 success: function (response) {
@@ -295,7 +293,7 @@ pimcore.object.variantsTab = Class.create(pimcore.object.helpers.gridTabAbstract
     doAdd: function (button, value) {
         if (button == "ok") {
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_dataobject_dataobject_add'),
+                url: "/admin/object/add",
                 method: 'POST',
                 params: {
                     className: this.element.data.general.o_className,
@@ -329,7 +327,7 @@ pimcore.object.variantsTab = Class.create(pimcore.object.helpers.gridTabAbstract
             }
 
             Ext.Ajax.request({
-                url: Routing.generate('pimcore_admin_dataobject_dataobject_delete'),
+                url: "/admin/object/delete",
                 method: 'DELETE',
                 params: {
                     id: id
