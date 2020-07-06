@@ -104,7 +104,7 @@ pimcore.asset.metadata.tags.abstract = Class.create({
     getWindowCellEditor: function ( field, record) {
         return new pimcore.element.helpers.gridCellEditor({
             fieldInfo: field,
-            elementType: "asset"
+            elementType: "assetmetadata"
         });
     },
 
@@ -127,4 +127,35 @@ pimcore.asset.metadata.tags.abstract = Class.create({
         }
     },
 
+    getGridCellEditor: function(gridtype, record) {
+        return null;
+    },
+
+    updatePredefinedGridRow: function(grid, row, data) {
+        // nothing to do
+    },
+
+    getGridCellRenderer: function(value, metaData, record, rowIndex, colIndex, store) {
+        return Ext.util.Format.htmlEncode(value);
+    },
+
+    handleGridCellClick: function(grid, cell, rowIndex, cellIndex, e) {
+        // nothing to do
+    },
+
+    marshal: function(value) {
+        return value;
+    },
+
+    unmarshal: function(value) {
+        return value;
+    },
+
+    getGridOpenActionVisibilityStyle: function() {
+        return "pimcore_hidden";
+    },
+
+    handleGridOpenAction:function (grid, rowIndex) {
+
+    }
 });

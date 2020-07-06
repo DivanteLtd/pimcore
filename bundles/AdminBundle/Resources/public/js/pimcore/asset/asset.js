@@ -16,7 +16,7 @@ pimcore.asset.asset = Class.create(pimcore.element.abstract, {
 
     getData: function () {
         Ext.Ajax.request({
-            url: "/admin/asset/get-data-by-id",
+            url: Routing.generate('pimcore_admin_asset_getdatabyid'),
             success: this.getDataComplete.bind(this),
             failure: function() {
                 this.forgetOpenTab();
@@ -83,7 +83,7 @@ pimcore.asset.asset = Class.create(pimcore.element.abstract, {
 
         this.tab.on("beforedestroy", function () {
             Ext.Ajax.request({
-                url: "/admin/element/unlock-element",
+                url: Routing.generate('pimcore_admin_element_unlockelement'),
                 method: 'PUT',
                 params: {
                     id: this.data.id,
@@ -196,7 +196,7 @@ pimcore.asset.asset = Class.create(pimcore.element.abstract, {
                 iconCls: "pimcore_material_icon_download pimcore_material_icon",
                 scale: "medium",
                 handler: function () {
-                    pimcore.helpers.download("/admin/asset/download?id=" + this.data.id);
+                    pimcore.helpers.download(Routing.generate('pimcore_admin_asset_download', {id: this.data.id}));
                 }.bind(this)
             });
 
@@ -233,7 +233,7 @@ pimcore.asset.asset = Class.create(pimcore.element.abstract, {
                     scale: "medium",
                     handler: function () {
                         Ext.Ajax.request({
-                            url: "/admin/asset/clear-thumbnail",
+                            url: Routing.generate('pimcore_admin_asset_clearthumbnail'),
                             method: 'POST',
                             params: {
                                 id: this.data.id
@@ -280,6 +280,17 @@ pimcore.asset.asset = Class.create(pimcore.element.abstract, {
         var tabPanel = Ext.getCmp("pimcore_panel_tabs");
         tabPanel.setActiveItem(tabId);
     },
+
+    saveToSession: function (onCompleteCallback) {
+
+        if (typeof onCompleteCallback != "function") {
+            onCompleteCallback = function () {
+            };
+        }
+
+        this.save(false, onCompleteCallback, "session")
+    },
+
 
     getSaveData : function (only) {
         var parameters = {};
@@ -329,7 +340,7 @@ pimcore.asset.asset = Class.create(pimcore.element.abstract, {
         return parameters;
     },
 
-    save : function (only, callback) {
+    save : function (only, callback, task) {
 
         if(this.tab.disabled || this.tab.isMasked()) {
             return;
@@ -353,8 +364,13 @@ pimcore.asset.asset = Class.create(pimcore.element.abstract, {
             }
         }
 
+        let params = this.getSaveData(only);
+        if (task) {
+            params.task = task
+        }
+
         Ext.Ajax.request({
-            url: '/admin/asset/save',
+            url: Routing.generate('pimcore_admin_asset_save'),
             method: "PUT",
             success: function (response) {
                 try{
@@ -387,7 +403,7 @@ pimcore.asset.asset = Class.create(pimcore.element.abstract, {
             failure: function () {
                 this.tab.unmask();
             }.bind(this),
-            params: this.getSaveData(only)
+            params: params
         });
     },
 
