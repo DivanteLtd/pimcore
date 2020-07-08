@@ -1854,7 +1854,15 @@ class DataObjectHelperController extends AdminController
         $fp = fopen($this->getCsvFile($fileHandle), 'a');
 
         $firstLine = true;
-        foreach ($csv as $line) {
+
+        $lineCount = count($csv);
+
+        if (!$addTitles) {
+            fwrite($fp, "\r\n");
+        }
+
+        for ($i = 0; $i < $lineCount; $i++) {
+            $line = $csv[$i];
             if ($addTitles && $firstLine) {
                 $firstLine = false;
                 $line = implode($delimiter, $line) . "\r\n";
