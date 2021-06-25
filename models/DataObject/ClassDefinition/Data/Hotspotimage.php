@@ -29,6 +29,7 @@ class Hotspotimage extends Model\DataObject\ClassDefinition\Data\Image implement
     use Extension\ColumnType;
     use Extension\QueryColumnType;
     use DataObject\ClassDefinition\NullablePhpdocReturnTypeTrait;
+    use DataObject\ClassDefinition\Data\Extension\RelationFilterConditionParser;
 
     /**
      * Static type of this element
@@ -821,4 +822,19 @@ class Hotspotimage extends Model\DataObject\ClassDefinition\Data\Image implement
             return $image;
         }
     }
+
+    /**
+     * Filter by relation feature
+     * @param array|string $value
+     * @param string       $operator
+     * @param array        $params
+     * @return string
+     */
+    public function getFilterConditionExt($value, $operator, $params = [])
+    {
+        $name = $params['name'] ?: $this->name;
+        $name .= '__image';
+        return $this->getRelationFilterCondition($value, $operator, $name);
+    }
+
 }

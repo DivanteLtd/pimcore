@@ -27,7 +27,7 @@ class ManyToManyObjectRelation extends AbstractRelations implements QueryResourc
     use Extension\QueryColumnType;
     use DataObject\ClassDefinition\Data\Relations\AllowObjectRelationTrait;
     use DataObject\ClassDefinition\Data\Relations\ManyToManyRelationTrait;
-
+    use DataObject\ClassDefinition\Data\Extension\RelationFilterConditionParser;
     /**
      * Static type of this element
      *
@@ -1017,6 +1017,19 @@ class ManyToManyObjectRelation extends AbstractRelations implements QueryResourc
     {
         $this->maxItems = $masterDefinition->maxItems;
         $this->relationType = $masterDefinition->relationType;
+    }
+
+    /**
+     * Filter by relation feature
+     * @param array|string $value
+     * @param string       $operator
+     * @param array        $params
+     * @return string
+     */
+    public function getFilterConditionExt($value, $operator, $params = [])
+    {
+        $name = $params['name'] ?: $this->name;
+        return $this->getRelationFilterCondition($value, $operator, $name);
     }
 }
 

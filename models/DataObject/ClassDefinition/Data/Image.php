@@ -26,6 +26,7 @@ class Image extends Data implements ResourcePersistenceAwareInterface, QueryReso
     use Extension\ColumnType;
     use Extension\QueryColumnType;
     use Model\DataObject\ClassDefinition\NullablePhpdocReturnTypeTrait;
+    use Data\Extension\RelationFilterConditionParser;
 
     /**
      * Static type of this element
@@ -562,5 +563,18 @@ class Image extends Data implements ResourcePersistenceAwareInterface, QueryReso
         if (intval($id) > 0) {
             return Asset\Image::getById($id);
         }
+    }
+
+    /**
+     * Filter by relation feature
+     * @param array|string $value
+     * @param string       $operator
+     * @param array        $params
+     * @return string
+     */
+    public function getFilterConditionExt($value, $operator, $params = [])
+    {
+        $name = $params['name'] ?: $this->name;
+        return $this->getRelationFilterCondition($value, $operator, $name);
     }
 }
